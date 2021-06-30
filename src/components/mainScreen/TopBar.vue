@@ -1,0 +1,55 @@
+<template>
+    <div class="top-bar">
+        <i class="fas fa-cog settings" @click="openSettings"></i>
+        <span> Connected to host: {{ currentHost }} </span>
+        <i class="fas fa-sign-in-alt log-out" @click="logOut"></i>
+    </div>
+</template>
+
+<script>
+export default {
+    methods: {
+        openSettings(){
+            this.$emit('open-settings');
+            console.log("Open settings");
+        },
+        logOut(){
+            this.$emit('log-out');
+            console.log("Log out");
+        }
+    },
+    props: ["current-host"]
+}
+</script>
+
+<style scoped>
+.top-bar{
+    background-image: linear-gradient(45deg, rgb(12, 138, 138), rgb(13, 97, 97));
+    text-align: center;
+    width: 100%;
+    margin-bottom: 10px;
+    display: flex;
+    height: 50px;
+    position: fixed;
+    top: 0;
+}
+.top-bar>span{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+}
+.settings{
+    color: aliceblue;
+    position: fixed;
+    font-size: 1.7em;
+    margin-left: 15px;
+    margin-top: 10px;
+}
+.log-out{
+    position: fixed;
+    color: aliceblue;
+    font-size: 1.7em;
+    margin-top: 10px;
+    right: 20px;
+}
+</style>
