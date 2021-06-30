@@ -112,6 +112,7 @@ export default {
     color: rgba(189, 206, 214, 0.801);
     border-color: rgba(240, 248, 255, 0.664);
     background-color: #0090b4;
+    cursor: pointer;
 }
 .choice-left{
     border-radius: 15px 0 0 15px;
