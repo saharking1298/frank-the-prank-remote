@@ -1,5 +1,5 @@
 <template>
-    <div class="categories-wrapper" v-for="(categoryLine, index) in categoriesSorted" :key="index">
+    <div class="categories-wrapper fade-in" v-for="(categoryLine, index) in categoriesSorted" :key="index">
       <div class="feature-category" v-for="category in categoryLine" :key="category.id" @click="onCategoryClick(category.id)"> 
         <div class="text-container"> <strong> {{ category.name }} </strong> </div>
       </div>

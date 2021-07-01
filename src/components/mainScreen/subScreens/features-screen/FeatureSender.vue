@@ -1,6 +1,6 @@
 <template>
     <div class="background"> </div>
-    <div class="feature-sender">
+    <div class="feature-sender fade-in">
         <div class="flexbox">
             <i class="fas fa-arrow-left back-arrow" @click="back"></i>
             <h2> Send an action: {{ feature.name }} </h2>

@@ -1,6 +1,6 @@
 <template>
     <div class="background"> </div>
-    <div class="login-screen">
+    <div class="login-screen fade-in">
         <h2> Frank The Prank - Login/Register </h2>
         <form>
             <div class="form container">

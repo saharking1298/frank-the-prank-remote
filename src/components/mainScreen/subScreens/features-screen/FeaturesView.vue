@@ -1,9 +1,11 @@
 <template>
-    <div class="flexbox">
-        <i class="fas fa-arrow-left back-arrow" @click="back"></i>
-        <strong> {{ outputText }} </strong>
+    <div class="fade-in">
+         <div class="flexbox">
+            <i class="fas fa-arrow-left back-arrow" @click="back"></i>
+            <strong> {{ outputText }} </strong>
+        </div>
+        <feature-card v-for="feature in filteredFeatures" :key="feature.name" :feature="feature" @click="cardClick(feature)"> </feature-card>
     </div>
-    <feature-card v-for="feature in filteredFeatures" :key="feature.name" :feature="feature" @click="cardClick(feature)"> </feature-card>
 </template>
 
 <script>

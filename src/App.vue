@@ -1,6 +1,7 @@
 <template>
-    <login-screen v-if="currentScreen === 'remoetLoginScreen'"> </login-screen>
+    <login-screen v-if="currentScreen === 'remoteLoginScreen'"> </login-screen>
     <main-screen :currentHost="currentHost" v-else-if="currentScreen === 'mainScreen'"></main-screen>
+    <settings-screen v-else-if="currentScreen === 'settingsScreen'"> </settings-screen>
     <toast-message :toast-message="currentToast.message" :toast-duration="currentToast.duration" :toast-style="currentToast.style" :toast-activator="toastActivator" :toast-hider="toastHider"> </toast-message>
 </template>
 
@@ -9,12 +10,13 @@ import ToastMessage from './components/ToastMessage.vue';
 import MainScreen from './components/MainScreen.vue';
 import LoginScreen from './components/LoginScreen.vue';
 import socket from './socket';
+import SettingsScreen from './components/SettingsScreen.vue';
 export default {
-  components: { ToastMessage, MainScreen, LoginScreen },
+  components: { ToastMessage, MainScreen, LoginScreen, SettingsScreen },
     data(){
         return {
             socket: socket,
-            currentScreen: "remoetLoginScreen",// "remoetLoginScreen", // "mainScreen",
+            currentScreen: "remoteLoginScreen",// "remoetLoginScreen", // "mainScreen",
             currentHost: "sahar-pc",
             currentToast: {},
             toastActivator: false,
@@ -62,6 +64,8 @@ export default {
             socket: this.socket,
             featureCategories: this.featureCategories,
             allFeatures: this.allFeatures,
+            sleep: this.sleep,
+            listen: this.listen,
         };
     },
     methods: {
@@ -74,6 +78,19 @@ export default {
         },
         hideToast(){
             this.toastHider = !this.toastHider;
+        },
+        sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        },
+        async listen(event, ...args){
+            let response;
+            this.socket.emit(event, ...args, (output) => {
+                response = output;
+            });
+            while(!response){
+                await this.sleep(10);
+            }
+            return response;
         }
     },
     created() {
@@ -91,6 +108,7 @@ export default {
     font-family: 'Jost', sans-serif;
 }
 .background{
+    animation: fadeIn ease 0.6s;
     position: fixed;
     top: 0;
     left: 0;
@@ -106,5 +124,33 @@ body{
 }
 .fas{
     cursor: pointer;
+}
+.fade-in{
+    animation: fadeIn ease 0.8s;
+}
+fade-in-quick{
+    animation: fadeIn ease 0.4s;
+}
+@keyframes fadeIn{
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+@keyframes fadeOut{
+    0%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+    }
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>

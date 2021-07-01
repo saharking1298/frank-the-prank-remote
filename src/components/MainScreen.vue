@@ -1,7 +1,9 @@
 <template>
-    <top-bar :current-host="currentHost"> </top-bar>
-    <features-screen v-show="currentScreen === 'features'" :feature-categories="featureCategories"> </features-screen>
-    <bottom-bar :current-screen="currentScreen" @setScreen="setScreen"> </bottom-bar>
+    <div class="fade-in">
+        <top-bar :current-host="currentHost"> </top-bar>
+        <features-screen v-show="currentScreen === 'features'" :feature-categories="featureCategories"> </features-screen>
+        <bottom-bar :current-screen="currentScreen" @setScreen="setScreen"> </bottom-bar>
+    </div>
 </template>
 
 <script>

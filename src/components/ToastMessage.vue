@@ -1,5 +1,5 @@
 <template>
-  <div class="custom-toast" :class="toastStyle" v-if="visible">{{ toastMessage }} </div>
+  <div class="custom-toast fade-in" :class="toastStyle" v-if="visible"> {{ toastMessage }} </div>
 </template>
 
 <script>

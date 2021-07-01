@@ -10,14 +10,14 @@
 export default {
     methods: {
         openSettings(){
-            this.$emit('open-settings');
-            console.log("Open settings");
+            this.setMainScreen("settingsScreen")
         },
         logOut(){
             this.$emit('log-out');
             console.log("Log out");
         }
     },
+    inject: ["setMainScreen"],
     props: ["current-host"]
 }
 </script>
