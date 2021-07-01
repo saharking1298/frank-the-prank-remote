@@ -7,11 +7,11 @@
                 <div class="credentials">
                     <div class="form-group">
                         <label for="username-input"> Enter your username: </label>
-                        <input type="text" class="form-control" id="username-input" v-model="username" required placeholder="Type Your Username here...">
+                        <input type="text" class="form-control" id="username-input" v-model="username" required placeholder="Type Your Username here..." @keydown.enter.prevent="focusOn('passwordInput')">
                     </div>
                     <div class="form-group">
                         <label for="password-input"> Enter your password: </label>
-                        <input type="password" class="form-control" id="password-input" v-model="password" required placeholder="Type Your Password here..." minlength="8">
+                        <input type="password" class="form-control" id="password-input" v-model="password" required placeholder="Type Your Password here..." minlength="8" ref="passwordInput">
                     </div>
                 </div>
                 <div class="login-register-choice flexbox">
@@ -39,8 +39,11 @@ export default {
         setChoice(choice){
             this.currentChoice = choice;
         },
+        focusOn(element){
+            this.$refs[element].focus();
+        },
         login(){
-            let toast = {duration: 3, style: "fit-style"};
+            let toast = {duration: 5, style: "fit-style"};
             this.username = this.username.trim();
             if(this.username === ''){
                 toast.message = "Please enter your username";
