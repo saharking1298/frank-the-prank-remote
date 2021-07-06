@@ -27,7 +27,7 @@
 <script>
 import socket from '../socket';
 export default {
-    inject: ["socket", "showToast", "hideToast", "setMainScreen"],
+    inject: ["socket", "showToast", "hideToast", "setMainScreen", "listen"],
     data() {
         return {
             currentChoice: "Login",
@@ -66,9 +66,11 @@ export default {
                     });
                 }
                 else{
-                    socket.emit("registerRemote", {username: this.username, password: this.password}, (output) => {
+                    socket.emit("registerRemote", {username: this.username, password: this.password}, async (output) => {
                          if(output.approved){
-                            this.setMainScreen("mainScreen");
+                            await this.socket.emit("login", "remote", {username: this.username, password: this.password}, () => {
+                                this.setMainScreen("mainScreen");
+                            })
                         } else{
                             const toast = {duration: 3, style: "fit-style", message: "Connection failed. Message: " + output.message};
                             this.showToast(toast);

@@ -66,6 +66,7 @@ export default {
             allFeatures: this.allFeatures,
             sleep: this.sleep,
             listen: this.listen,
+            connectToHost: this.connectToHost,
         };
     },
     methods: {
@@ -81,6 +82,13 @@ export default {
         },
         sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
+        },
+        async connectToHost(hostId, password){
+            const status = await this.listen("connectToHost", hostId, password);
+            if (status.approved){
+                this.currentHost = hostId;
+            }
+            return status;
         },
         async listen(event, ...args){
             let response;
