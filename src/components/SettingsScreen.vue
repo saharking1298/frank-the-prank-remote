@@ -7,16 +7,17 @@
     <section>
         <h3> Owned Hosts & Tokens: </h3>
         <p> Here are the host Ids you own and their tokens.</p>
-        <div class="host-card flexbox" v-for="host in ownedHosts" :key="host.hostId">
+        <div class="host-card flexbox" v-for="(host, index) in ownedHosts" :key="host.hostId">
             <div class="host-card-id"> {{ host.hostId }} </div>
             <div class="left-wrapper">
                 <span class="host-card-token"> {{ host.token }} </span>
                 <i class="fas fa-redo host-card-reload" @click="changeHostToken(host.hostId)"></i>
+                <i class="fas fa-trash-alt host-card-delete" @click="deleteHost(host.hostId, index)"></i>
             </div>
         </div>
-        <div class="flexbox">
-            <input id="id-input" type="text" placeholder="Type here a new Id..." v-model="hostIdInput">
-            <button @click="registerHost"> Add </button>
+        <div class="flexbox register-host">
+            <input id="id-input" type="text" v-model="hostIdInput" @keydown.enter="registerHost" placeholder="Type here a new Id...">
+            <button id="add-host-btn" @click="registerHost"> Add </button>
         </div>
     </section>
 
@@ -24,7 +25,7 @@
 
 <script>
 export default {
-    inject: ["setMainScreen", "hideToast", "socket", "listen"],
+    inject: ["setMainScreen", "showToast", "hideToast", "socket", "listen"],
 
     data() {
         return {
@@ -35,6 +36,10 @@ export default {
     methods: {
         back() {
             this.setMainScreen("mainScreen");
+        },
+        async deleteHost(hostId, hostIndex){
+            await this.listen("deleteHost", hostId);
+            this.ownedHosts.splice(hostIndex, 1);
         },
         async registerHost(){
             this.hostIdInput = this.hostIdInput.trim();
@@ -122,17 +127,19 @@ p{
 .host-card-token{
     margin-right: 10px;
 }
+.register-host{
+    width: 90%;
+    max-width: 800px;
+    margin-right: auto;
+    margin-left: auto;
+}
 .left-wrapper {
     position: absolute;
     width: max-content;
     right: 10px;
 }
-input{
-    width: 70%;
-    align-content: left;
-}
 button{
-    margin-right: 20px;
+    margin-left: 20px;
 }
 .back-arrow{
     position: absolute;
@@ -141,7 +148,32 @@ button{
     color: aliceblue;
     cursor: pointer;
 }
+.host-card-delete{
+    margin-left: 8px;
+}
 #id-input{
-    margin-left: 20px;
+    margin-right: 5px;
+    border-radius: 5px;
+    margin-top: 5px;
+    border: 2px solid white;
+}
+#add-host-btn{
+    margin-top: 6px;
+    margin-left: 5px;
+    background: rgba(240, 248, 255, 0.151);
+    box-shadow: 0 0 2px 1px rgba(240, 248, 255, 0.616);
+    color: rgba(240, 248, 255, 0.74);
+    border-radius: 5px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 8px;
+    padding-right: 8px;
+    border: 0;
+    height: min-content;
+    transition: all 0.25s;
+}
+#add-host-btn:hover{
+    background-color: rgba(240, 248, 255, 0.05);
+    box-shadow: 0 0 6px 2px rgba(240, 248, 255, 0.616);
 }
 </style>
