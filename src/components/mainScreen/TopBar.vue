@@ -1,7 +1,7 @@
 <template>
     <div class="top-bar">
         <i class="fas fa-cog settings" @click="openSettings"></i>
-        <span> Connected to host: {{ currentHost }} </span>
+        <span> {{ hostConnectionStatus }} </span>
         <i class="fas fa-sign-in-alt log-out" @click="logOut"></i>
     </div>
 </template>
@@ -10,11 +10,20 @@
 export default {
     methods: {
         openSettings(){
-            this.setMainScreen("settingsScreen")
+            this.setMainScreen("settingsScreen");
         },
         logOut(){
-            this.$emit('log-out');
-            console.log("Log out");
+            this.setMainScreen("hostLoginScreen");
+        }
+    },
+    computed: {
+        hostConnectionStatus(){
+            if(this.currentHost === ''){
+                return("Not connected to host");
+            }
+            else{
+                return("Connected to host: " + this.currentHost);
+            }
         }
     },
     inject: ["setMainScreen"],

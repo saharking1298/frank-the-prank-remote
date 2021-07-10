@@ -25,11 +25,11 @@
 </template>
 
 <script>
-import socket from '../socket';
 export default {
     inject: ["socket", "showToast", "hideToast", "setMainScreen", "listen"],
     data() {
         return {
+            redirectTarget: "hostLoginScreen", // "mainScreen",
             currentChoice: "Login",
             username: '',
             password: '',
@@ -54,11 +54,11 @@ export default {
                 this.showToast(toast);
             }
             else{
-                socket.connect();
+                this.socket.connect();
                 if(this.currentChoice === 'Login'){
-                    socket.emit("login", "remote", {username: this.username, password: this.password}, (output) => {
+                    this.socket.emit("login", "remote", {username: this.username, password: this.password}, (output) => {
                         if(output.approved){
-                            this.setMainScreen("mainScreen");
+                            this.setMainScreen(this.redirectTarget);
                         } else{
                             const toast = {duration: 3, style: "fit-style", message: "Connection failed. Message: " + output.message};
                             this.showToast(toast);
@@ -66,10 +66,10 @@ export default {
                     });
                 }
                 else{
-                    socket.emit("registerRemote", {username: this.username, password: this.password}, async (output) => {
+                    this.socket.emit("registerRemote", {username: this.username, password: this.password}, async (output) => {
                          if(output.approved){
-                            await this.socket.emit("login", "remote", {username: this.username, password: this.password}, () => {
-                                this.setMainScreen("mainScreen");
+                            await this.this.socket.emit("login", "remote", {username: this.username, password: this.password}, () => {
+                                this.setMainScreen(this.redirectTarget);
                             })
                         } else{
                             const toast = {duration: 3, style: "fit-style", message: "Connection failed. Message: " + output.message};

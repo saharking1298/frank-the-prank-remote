@@ -2,6 +2,7 @@
     <login-screen v-if="currentScreen === 'remoteLoginScreen'"> </login-screen>
     <main-screen :currentHost="currentHost" v-else-if="currentScreen === 'mainScreen'"></main-screen>
     <settings-screen v-else-if="currentScreen === 'settingsScreen'"> </settings-screen>
+    <host-login-screen v-else-if="currentScreen === 'hostLoginScreen'"> </host-login-screen>
     <toast-message :toast-message="currentToast.message" :toast-duration="currentToast.duration" :toast-style="currentToast.style" :toast-activator="toastActivator" :toast-hider="toastHider"> </toast-message>
 </template>
 
@@ -11,13 +12,14 @@ import MainScreen from './components/MainScreen.vue';
 import LoginScreen from './components/LoginScreen.vue';
 import socket from './socket';
 import SettingsScreen from './components/SettingsScreen.vue';
+import HostLoginScreen from './components/HostLoginScreen.vue';
 export default {
-  components: { ToastMessage, MainScreen, LoginScreen, SettingsScreen },
+  components: { ToastMessage, MainScreen, LoginScreen, SettingsScreen, HostLoginScreen },
     data(){
         return {
             socket: socket,
             currentScreen: "remoteLoginScreen",// "remoetLoginScreen", // "mainScreen",
-            currentHost: "sahar-pc",
+            currentHost: "",
             currentToast: {},
             toastActivator: false,
             toastHider: false,
