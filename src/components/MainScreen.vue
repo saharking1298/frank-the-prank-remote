@@ -35,7 +35,9 @@ export default {
     created() {
         for(let i = 0; i < this.allFeatures.length; i++){
             this.allFeatures[i]["categoryName"] = this.featureCategories.find(category => category.id === this.allFeatures[i].categoryId).name;
-            this.allFeatures[i]["arguments"] = [];
+            if(!this.allFeatures[i]["arguments"]){
+                this.allFeatures[i]["arguments"] = [];
+            }
         }
     }
 }

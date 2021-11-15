@@ -11,10 +11,12 @@
         </div>
         <h3 class="argument-heading"> Arguments </h3>
         <div v-if="feature.arguments.length > 0" class="arguments-section">
-            <div v-for="argument in features.arguments" :key="argument.id">
+            <div v-for="argument in feature.arguments" :key="argument.id">
                 <int-argument v-if="argument.dataType === 'int'"> </int-argument>
                 <float-argument v-else-if="argument.dataType === 'float'"> </float-argument>
-                <string-argument v-else-if="argument.dataType === 'string'"> </string-argument>
+                <string-argument v-else-if="argument.dataType === 'string'" :argument="argument">
+
+                </string-argument>
                 <text-argument v-else-if="argument.dataType === 'text'"> </text-argument>
                 <choice-argument v-else-if="argument.dataType === 'choice'"> </choice-argument>
             </div>
@@ -33,19 +35,41 @@ import IntArgument from './feature-arguments/IntArgument.vue';
 import StringArgument from './feature-arguments/StringArgument.vue';
 import TextArgument from './feature-arguments/TextArgument.vue';
 export default {
-  components: { StringArgument, TextArgument, FloatArgument, ChoiceArgument, IntArgument },
+    components: { StringArgument, TextArgument, FloatArgument, ChoiceArgument, IntArgument },
+    data() {
+        return {
+            argumentValues: [],
+            argumentNames: [],
+        };
+    },
+    mounted() {
+        const argTypes = {int: 0, float: 0.0, string: '', text: '', choice: ''};
+        for(let arg in this.feature.arguments){
+            this.argumentValues.push(argTypes[arg.dataType]);
+            this.argumentNames.push(this.feature.arguments[arg].id);
+        }
+    },
+    provide() {
+        return {
+            updateArgValue: this.updateArgValue,
+        };
+    },
     props: {
         feature: {
            type: Object,
             // required: true,
-            default: function() {
-                return {name: 'msgbox', categoryId: 'multimedia', description: 'Displays a message box on the screen', arguments: []}
-            }
         }
     },
-    inject: ["showToast", "setSubScreen"],
+    inject: ["showToast", "setSubScreen", "directTalk"],
     methods: {
+        updateArgValue(argName, argValue){
+            let i = this.argumentNames.findIndex(value => {
+                return value === argName;
+            });
+            this.argumentValues[i] = argValue;
+        },
         sendAction(){
+            this.directTalk({namespace: "feature", eventName: this.feature.name, eventArgs: this.argumentValues});
             const toast = {
                 message: `Feature "${this.feature.name}" has been sent to host.`,
                 style: "fit-style",

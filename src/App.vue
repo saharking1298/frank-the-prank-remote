@@ -32,7 +32,7 @@ export default {
                 {name: 'mdown', categoryId: 'mouseKeyboard', description: 'Moves the mouse cursor down X amount of pixels'},
                 {name: 'mright', categoryId: 'mouseKeyboard', description: 'Moves the mouse cursor right X amount of pixels'},
                 {name: 'mleft', categoryId: 'mouseKeyboard', description: 'Moves the mouse cursor left X amount of pixels'},
-                {name: 'url', categoryId: 'multimedia', description: "Opens a specific URL in the host's browser"},
+                {name: 'url', categoryId: 'multimedia', description: "Opens a specific URL in the host's browser", arguments: [{dataType: "string", id: "url", title: "The URL to open"}]},
                 {name: 'say', categoryId: 'multimedia', description: 'Activates a text to speech on the host computer'},
                 {name: 'msgbox', categoryId: 'multimedia', description: 'Displays a message box on the screen'},
                 {name: 'play', categoryId: 'multimedia', description: 'Plays a track in Ftp media player'},
@@ -66,6 +66,7 @@ export default {
             socket: this.socket,
             featureCategories: this.featureCategories,
             allFeatures: this.allFeatures,
+            directTalk: this.directTalk,
             sleep: this.sleep,
             listen: this.listen,
             connectToHost: this.connectToHost,
@@ -84,6 +85,10 @@ export default {
         },
         sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
+        },
+        async directTalk(content){
+            const status = await this.listen("directTalk", content);
+            return status;
         },
         async connectToHost(hostId, password){
             const status = await this.listen("connectToHost", hostId, password);
@@ -106,7 +111,9 @@ export default {
     created() {
         for(let i = 0; i < this.allFeatures.length; i++){
             this.allFeatures[i]["categoryName"] = this.featureCategories.find(category => category.id === this.allFeatures[i].categoryId).name;
-            this.allFeatures[i]["arguments"] = [];
+            if(!this.allFeatures[i]["arguments"]){
+                this.allFeatures[i]["arguments"] = [];
+            }
         }
     }
 }
@@ -160,7 +167,7 @@ fade-in-quick{
 .fade-enter-active, .fade-leave-active {
   transition: opacity .5s;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+.fade-enter, .fade-leave-to {
   opacity: 0;
 }
 </style>
