@@ -69,9 +69,6 @@ export default {
             if(status.approved){
                 this.ownedHosts.find(host => host.hostId === hostId).token = status.token;
             }
-            else{
-                console.log("Shitttt")
-            }
         }
     },
     async created() {

@@ -35,6 +35,9 @@ export default {
             password: '',
         };
     },
+    mounted(){
+
+    },
     methods: {
         setChoice(choice){
             this.currentChoice = choice;
@@ -68,7 +71,7 @@ export default {
                 else{
                     this.socket.emit("registerRemote", {username: this.username, password: this.password}, async (output) => {
                          if(output.approved){
-                            await this.this.socket.emit("login", "remote", {username: this.username, password: this.password}, () => {
+                            await this.socket.emit("login", "remote", {username: this.username, password: this.password}, () => {
                                 this.setMainScreen(this.redirectTarget);
                             })
                         } else{

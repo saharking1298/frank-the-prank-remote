@@ -5,7 +5,7 @@
         <div class="form container credentials">
             <div class="form-group">
                 <label for="host-id-input"> Enter host Id: </label>
-                <input type="text" class="form-control" v-model="hostIdInput" id="host-id-input" @keydown.enter="focus('passwordInput')" placeholder="Type Host Id Here...">
+                <input type="text" class="form-control" v-model="hostIdInput" id="host-id-input" ref="hostIdInput" @keydown.enter="focus('passwordInput')" :autocomplete="allowSuggestions ? 'on': 'off'" placeholder="Type Host Id Here...">
             </div>
             <div class="form-group">
                 <label for="password-input"> Enter host password: </label>
@@ -19,9 +19,10 @@
 
 <script>
 export default {
-    inject: ["setMainScreen", "connectToHost", "listen", "showToast", "hideToast"],
+    inject: ["setMainScreen", "connectToHost", "listen", "showToast", "hideToast", "setHostStatus"],
     watch: {
         hostIdInput(){
+            this.allowSuggestions = true;
             this.hideToast();
         }
     },
@@ -29,12 +30,14 @@ export default {
         return{
             hostIdInput: '',
             passwordInput: '',
+            allowSuggestions: false,
         };
     },
+    mounted(){
+        this.focus("hostIdInput");
+        // this.allowSuggestions = true;
+    },
     methods: {
-        focus(refName){
-            this.$refs[refName].focus();
-        },
         async connect(){
             const hostId = this.hostIdInput.trim();
             const password = this.passwordInput.trim();
@@ -47,12 +50,16 @@ export default {
                 const status = await this.connectToHost(hostId, password);
                 if(status.approved){
                     this.setMainScreen("mainScreen");
+                    this.setHostStatus("online");
                 }
                 else{
                     toast.message = "Connection Failed: " + status.message;
                     this.showToast(toast);
                 }
             }
+        },
+        focus(refName){
+            this.$refs[refName].focus();
         },
     }
 }

@@ -1,7 +1,7 @@
 <template>
     <div>
         <label for=""> Enter {{ argument.title }}:</label>
-        <input type=text v-model="text" :placeholder="argument.title">
+        <input type=text v-model="text" :placeholder="argument.title" @keydown.enter="fillNext(argument.id)" ref="focusArea">
     </div>
 </template>
 
@@ -11,6 +11,10 @@ export default {
         argument: {
             type: Object,
             required: true,
+        },
+        focusActivator: {
+            type: String,
+            required: true
         }
     },
     inject: ['updateArgValue'],
@@ -22,7 +26,12 @@ export default {
     watch: {
         text(){
             this.updateArgValue(this.argument.id, this.text);
-        }
+        },
+        focusActivator(value) {
+            if(value === this.argument.id){
+                this.$refs['focusArea'].focus();
+            }
+        },
     }
 }
 </script>

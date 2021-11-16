@@ -2,18 +2,22 @@
     <div class="top-bar">
         <i class="fas fa-cog settings" @click="openSettings"></i>
         <span> {{ hostConnectionStatus }} </span>
+        <status-indicator :status="hostStatus.status"> </status-indicator>
         <i class="fas fa-sign-in-alt log-out" @click="logOut"></i>
     </div>
 </template>
 
 <script>
+import StatusIndicator from '../StatusIndicator.vue';
 export default {
+    components: { StatusIndicator },
     methods: {
         openSettings(){
             this.setMainScreen("settingsScreen");
         },
         logOut(){
             this.setMainScreen("hostLoginScreen");
+            this.setHostStatus("unconnected");
         }
     },
     computed: {
@@ -26,7 +30,7 @@ export default {
             }
         }
     },
-    inject: ["setMainScreen"],
+    inject: ["setMainScreen", "hostStatus", "setHostStatus"],
     props: ["current-host"]
 }
 </script>

@@ -12,13 +12,13 @@
         <h3 class="argument-heading"> Arguments </h3>
         <div v-if="feature.arguments.length > 0" class="arguments-section">
             <div v-for="argument in feature.arguments" :key="argument.id">
-                <int-argument v-if="argument.dataType === 'int'"> </int-argument>
-                <float-argument v-else-if="argument.dataType === 'float'"> </float-argument>
-                <string-argument v-else-if="argument.dataType === 'string'" :argument="argument">
+                <int-argument v-if="argument.dataType === 'int'" :argument="argument" :focusActivator="focusedArgument"> </int-argument>
+                <float-argument v-else-if="argument.dataType === 'float'" :argument="argument"> </float-argument>
+                <string-argument v-else-if="argument.dataType === 'string'" :argument="argument" :focusActivator="focusedArgument">
 
                 </string-argument>
-                <text-argument v-else-if="argument.dataType === 'text'"> </text-argument>
-                <choice-argument v-else-if="argument.dataType === 'choice'"> </choice-argument>
+                <text-argument v-else-if="argument.dataType === 'text'" :argument="argument"> </text-argument>
+                <choice-argument v-else-if="argument.dataType === 'choice'" :argument="argument"> </choice-argument>
             </div>
         </div>
         <p v-else class="info"> Looks like this feature doesn't take any arguments. <br>
@@ -40,18 +40,24 @@ export default {
         return {
             argumentValues: [],
             argumentNames: [],
+            argTypes: {int: 0, float: 0.0, string: '', text: '', choice: ''},
+            focusedArgument: '',
         };
     },
     mounted() {
-        const argTypes = {int: 0, float: 0.0, string: '', text: '', choice: ''};
         for(let arg in this.feature.arguments){
-            this.argumentValues.push(argTypes[arg.dataType]);
+            this.argumentValues.push(this.argTypes[arg.dataType]);
             this.argumentNames.push(this.feature.arguments[arg].id);
+        }
+        if(this.feature.arguments.length > 0){
+            this.focusedArgument = this.argumentNames[0];
         }
     },
     provide() {
         return {
             updateArgValue: this.updateArgValue,
+            fillNext: this.fillNext,
+            setFocusedArgument: this.setFocusedArgument,
         };
     },
     props: {
@@ -78,9 +84,33 @@ export default {
             this.setSubScreen("featureCategories");
             this.showToast(toast);
         },
+        setFocusedArgument(value){
+            this.focusedArgument = value;
+        },
+        fillNext(argName){
+            let index = this.argumentNames.findIndex(value => value === argName);
+            let valid = true;
+            if(index === this.argumentNames.length - 1){
+                for(let i = 0; i < this.feature.arguments.length; i++){
+                    if([undefined, ''].includes(this.argumentValues[i])){
+                        valid = false;
+                        break;
+                    }
+                }
+                if(valid){
+                    this.sendAction();
+                }
+            }
+            else{
+                this.focusedArgument = this.argumentNames[index + 1];
+            }
+        },
         back(){
             this.setSubScreen("featureSearch");
-        }
+        },
+        focus(refName){
+            this.$refs[refName].focus();
+        },
     }
 }
 </script>
