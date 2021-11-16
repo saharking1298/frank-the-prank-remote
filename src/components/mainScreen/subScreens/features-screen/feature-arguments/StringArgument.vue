@@ -1,7 +1,7 @@
 <template>
     <div>
         <label for=""> Enter {{ argument.title }}:</label>
-        <input type=text v-model="text" :placeholder="argument.title" @keydown.enter="fillNext(argument.id)" ref="focusArea">
+        <input type=text v-model="text" :placeholder="argument.title" @keydown.enter="fillNext(argument.id)" ref="focusArea" @focus="setFocusedArgument(argument.id)">
     </div>
 </template>
 
@@ -17,7 +17,7 @@ export default {
             required: true
         }
     },
-    inject: ['updateArgValue'],
+    inject: ['updateArgValue', 'setFocusedArgument', 'fillNext'],
     data() {
         return {
             text: '',
