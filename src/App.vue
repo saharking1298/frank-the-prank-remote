@@ -27,7 +27,7 @@ export default {
             toastHider: false,
             featureCategories: [{name: "All Categories", id: "all"}, {name: "Mouse & Keyboard", id: "mouseKeyboard"}, {name: "Multimedia", id: "multimedia"}, {name: "Power Control", id: "power"}, {name: "Trickshots", id: "tricks"}, {name: "Loops", id: "loops"}, {name: "Advanced Control", id: "control"}],
             allFeatures: [
-                {name: 'click', categoryId: 'mouseKeyboard', description: 'Clicks the mouse in a certain loaction on the screen'},
+                {name: 'click', categoryId: 'mouseKeyboard', description: 'Clicks the mouse in a certain loaction on the screen', arguments: [{id: 'button', dataType: 'choice', title: 'The button to press', choices: ['Left', 'Right', 'Middle'], manipulator: (choice) => {return choice.toLowerCase()}}]},
                 {name: 'type', categoryId: 'mouseKeyboard', description: 'Sends a virtual input to the keyboard', arguments: [{id: 'text', dataType: 'string', title: 'The text to write'}]},
                 {name: 'move', categoryId: 'mouseKeyboard', description: 'Moves the mouse cursor to specific screen coordinates', arguments: [{id: 'xPos', dataType: 'int', title: 'The X position'}, {id: 'yPos', dataType: 'int', title: 'The Y position'}]},
                 {name: 'mup', categoryId: 'mouseKeyboard', description: 'Moves the mouse cursor up X amount of pixels', arguments: [{id: 'numOfPixels', dataType: 'int', title: 'The number of pixels to go up'}]},
@@ -41,7 +41,7 @@ export default {
                 {name: 'pause', categoryId: 'multimedia', description: 'Pauses a track in Ftp media player'},
                 {name: 'stop', categoryId: 'multimedia', description: 'Stops the current track in Ftp media player'},
                 {name: 'cd', categoryId: 'tricks', description: "Opens or close the host's CD-ROM drive"},
-                {name: 'crazy', categoryId: 'tricks', description: 'Causing the mouse to look like it is haunted'},
+                {name: 'crazy', categoryId: 'tricks', description: 'Causing the mouse to look like it is haunted', arguments: [{id: 'status', dataType: 'choice', title: 'Crazy state', choices: ['On', 'Off'], manipulator: (choice) => {return choice.toLowerCase()}}]},
                 {name: 'cmd', categoryId: 'control', description: "Executes a script on the command prompmt", arguments: [{id: 'cmd', dataType: 'string', title: 'The command to excecute'}]},
                 {name: 'reset', categoryId: 'control', description: "Relaunch Ftp Host app on the host computer"},
                 {name: 'exit', categoryId: 'control', description: "Exits Ftp app on the host computer. You won't be able to bring it back on until you do it manually!"},

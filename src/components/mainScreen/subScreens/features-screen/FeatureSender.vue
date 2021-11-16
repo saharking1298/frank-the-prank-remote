@@ -44,13 +44,10 @@ export default {
             focusedArgument: '',
         };
     },
-    mounted() {
+    created() {
         for(let arg in this.feature.arguments){
             this.argumentValues.push(this.argTypes[arg.dataType]);
             this.argumentNames.push(this.feature.arguments[arg].id);
-        }
-        if(this.feature.arguments.length > 0){
-            this.focusedArgument = this.argumentNames[0];
         }
     },
     provide() {
