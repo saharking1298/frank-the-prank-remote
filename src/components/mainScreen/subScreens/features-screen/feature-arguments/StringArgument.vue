@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="str-arg">
         <label for=""> Enter {{ argument.title }}:</label>
         <input type=text v-model="text" :placeholder="argument.title" @keydown.enter="fillNext(argument.id)" ref="focusArea" @focus="setFocusedArgument(argument.id)">
     </div>
@@ -18,6 +18,13 @@ export default {
         }
     },
     inject: ['updateArgValue', 'setFocusedArgument', 'fillNext'],
+    methods: {
+        focusIfNeeded(focusValue) {
+             if(focusValue === this.argument.id){
+                this.$refs['focusArea'].focus();
+            }
+        },
+    },
     data() {
         return {
             text: '',
@@ -28,14 +35,23 @@ export default {
             this.updateArgValue(this.argument.id, this.text);
         },
         focusActivator(value) {
-            if(value === this.argument.id){
-                this.$refs['focusArea'].focus();
-            }
+           this.focusIfNeeded(value);
         },
-    }
+    },
+    mounted() {
+        this.focusIfNeeded(this.focusActivator);
+    },
 }
 </script>
 
-<style>
-
+<style scoped>
+#str-arg{
+    color: rgba(255, 255, 255, 0.637);
+}
+input{
+    margin-top: 3px;
+    margin-left: 0px;
+    margin-right: 0px;
+    width: 100%;
+}
 </style>

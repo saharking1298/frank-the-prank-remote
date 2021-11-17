@@ -49,6 +49,9 @@ export default {
             this.argumentValues.push(this.argTypes[arg.dataType]);
             this.argumentNames.push(this.feature.arguments[arg].id);
         }
+        if(this.feature.arguments.length > 0){
+            this.fillNext();
+        }
     },
     provide() {
         return {

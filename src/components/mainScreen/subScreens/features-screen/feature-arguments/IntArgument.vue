@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <label for=""> Enter {{ argument.title }}:</label>
-        <input type=number v-model="number" :placeholder="argument.title" @keydown.enter="fillNext(argument.id)" ref="focusArea" @focus="setFocusedArgument(argument.id)">
+    <div id="int-arg">
+        <label :for="argument.id + '-el'"> Enter {{ argument.title }}:</label>
+        <input type=number v-model="number" :placeholder="argument.title" @keydown.enter="fillNext(argument.id)" ref="focusArea" @focus="setFocusedArgument(argument.id)" :id="argument.id + '-el'">
     </div>
 </template>
 
@@ -18,6 +18,13 @@ export default {
         }
     },
     inject: ['updateArgValue', 'fillNext', 'setFocusedArgument'],
+    methods: {
+        focusIfNeeded(focusValue) {
+             if(focusValue === this.argument.id){
+                this.$refs['focusArea'].focus();
+            }
+        },
+    },
     data() {
         return {
             number: '',
@@ -32,14 +39,23 @@ export default {
             this.updateArgValue(this.argument.id, num);
         },
         focusActivator(value) {
-            if(value === this.argument.id){
-                this.$refs['focusArea'].focus();
-            }
+           this.focusIfNeeded(value);
         },
-    }
+    },
+    mounted() {
+        this.focusIfNeeded(this.focusActivator);
+    },
 }
 </script>
 
-<style>
-
+<style scoped>
+#int-arg{
+    color: rgba(255, 255, 255, 0.637);
+}
+input{
+    margin-top: 3px;
+    margin-left: 0px;
+    margin-right: 0px;
+    width: 100%;
+}
 </style>
