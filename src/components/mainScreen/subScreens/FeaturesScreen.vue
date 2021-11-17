@@ -29,7 +29,7 @@ export default {
       required: true
     }
   },
-  inject: ["hideToast"],
+  inject: ["hideToast", "sendActionGlobal"],
   provide() {
     return {
       setSubScreen: this.setSubScreen,
@@ -44,9 +44,18 @@ export default {
       this.featureSenderCurrent = feature;
       this.setSubScreen("featureSender")
     },
-    searchFeature(searchInput){
-      this.searchFilter = "title";
+    searchFeature(searchInput, mode){
       this.filterText = searchInput.trim().toLowerCase();
+      let str = searchInput.trim();
+      if(mode === 'enter'){
+        /* Quick type */
+        if(str.startsWith('"') && str.endsWith('"') && str.length > 2){
+          this.sendActionGlobal("type", [str.substring(1, str.length - 1)])
+          this.clearSearchInput();
+          return;
+        }
+      }
+      this.searchFilter = "title";
       if(this.filterText === ''){
         this.currentSubScreen = 'featureCategories';
       }

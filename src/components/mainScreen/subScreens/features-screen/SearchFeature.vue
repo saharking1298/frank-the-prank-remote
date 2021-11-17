@@ -1,5 +1,5 @@
 <template>
-  <input type="text" v-model="searchInput" @input="search" @keydown.enter="search" placeholder="Search a feature...">
+  <input type="text" v-model="searchInput" @input="search('keydown')" @keydown.enter="search('enter')" placeholder="Search a feature...">
 </template>
 
 <script>
@@ -18,8 +18,8 @@ export default {
         }
     },
     methods: {
-        search(){
-            this.$emit("searchFeature", this.searchInput);
+        search(mode){
+            this.$emit("searchFeature", this.searchInput, mode);
         }
     }
 }
