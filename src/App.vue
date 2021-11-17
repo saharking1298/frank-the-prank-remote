@@ -75,6 +75,7 @@ export default {
             sleep: this.sleep,
             listen: this.listen,
             connectToHost: this.connectToHost,
+            sendActionGlobal: this.sendActionGlobal,
         };
     },
     methods: {
@@ -96,6 +97,15 @@ export default {
         },
         setHostStatus(status){
             this.hostStatus.status = status;
+        },
+        sendActionGlobal(featureName, featureArgs){
+            this.directTalk({namespace: "feature", eventName: featureName, eventArgs: featureArgs});
+            const toast = {
+                message: `Feature "${featureName}" has been sent to host.`,
+                style: "fit-style",
+                duration: 3
+            }
+            this.showToast(toast);
         },
         async directTalk(content){
             const status = await this.listen("directTalk", content);

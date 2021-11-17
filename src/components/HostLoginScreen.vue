@@ -35,7 +35,6 @@ export default {
     },
     mounted(){
         this.focus("hostIdInput");
-        // this.allowSuggestions = true;
     },
     methods: {
         async connect(){

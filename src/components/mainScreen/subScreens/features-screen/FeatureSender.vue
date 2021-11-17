@@ -66,7 +66,7 @@ export default {
             // required: true,
         }
     },
-    inject: ["showToast", "setSubScreen", "directTalk"],
+    inject: ["showToast", "setSubScreen", "directTalk", "sendActionGlobal"],
     methods: {
         updateArgValue(argName, argValue){
             let i = this.argumentNames.findIndex(value => {
@@ -75,28 +75,29 @@ export default {
             this.argumentValues[i] = argValue;
         },
         sendAction(){
-            this.directTalk({namespace: "feature", eventName: this.feature.name, eventArgs: this.argumentValues});
-            const toast = {
-                message: `Feature "${this.feature.name}" has been sent to host.`,
-                style: "fit-style",
-                duration: 3
+            if(this.argsValid()){
+                this.sendActionGlobal(this.feature.name, this.argumentValues);
+                this.setSubScreen("featureCategories");
             }
-            this.setSubScreen("featureCategories");
-            this.showToast(toast);
         },
         setFocusedArgument(value){
             this.focusedArgument = value;
         },
+        argsValid(){
+            let valid = true;
+            for(let i = 0; i < this.feature.arguments.length; i++){
+                if([undefined, ''].includes(this.argumentValues[i])){
+                    valid = false;
+                    break;
+                }
+            }
+            return valid;
+
+        },
         fillNext(argName){
             let index = this.argumentNames.findIndex(value => value === argName);
-            let valid = true;
+            let valid = this.argsValid();
             if(index === this.argumentNames.length - 1){
-                for(let i = 0; i < this.feature.arguments.length; i++){
-                    if([undefined, ''].includes(this.argumentValues[i])){
-                        valid = false;
-                        break;
-                    }
-                }
                 if(valid){
                     this.sendAction();
                 }
@@ -151,14 +152,6 @@ h3{
 .arguments-section{
     margin-top: 10px;
 }
-/* .background{
-    position: fixed;
-    margin-top: -10px;
-    height: calc(100vh - 70px);
-    width: 100%;
-    z-index: -1;
-    background-image: linear-gradient(45deg,rgb(26, 86, 90), rgb(38, 141, 148), rgb(38, 141, 148));
-} */
 
 .background{
     background-image: linear-gradient(45deg,rgb(26, 86, 90), rgb(38, 141, 148), rgb(38, 141, 148));
