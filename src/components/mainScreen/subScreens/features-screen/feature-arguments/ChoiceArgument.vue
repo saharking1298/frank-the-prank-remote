@@ -1,16 +1,17 @@
 <template>
-    <div>
-        <label for=""> Choose {{ argument.title }}: </label>
-        <!--
-        <select v-model="choice">
+    <div id="choice-arg">
+        <label class="arg-title"> Choose {{ argument.title }}: </label>
+        <select v-if="argument.choices.length > 10" v-model="currentChoice">
             <option v-for="(choice, index) in argument.choices" :key="index" :value="choice"> {{ choice }} </option>
         </select>
-        -->
-        <div v-for="(choice, index) in argument.choices" :key="index">
-            <input type="radio" :value="choice" v-model="currentChoice" :id="choice + '-el'">
-            <label :for="choice + '-el'"> {{ choice }} </label>
+        <div v-else class="radio-section">
+            <div v-for="(choice, index) in argument.choices" :key="index">
+                <label class="radio-label">
+                    <input type="radio" class="radio-btn" :value="choice" v-model="currentChoice">
+                    <span> {{ choice }} </span>
+                </label>
+            </div>
         </div>
-        
     </div>
 </template>
 
@@ -48,6 +49,25 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+#choice-arg{
+    color: rgba(255, 255, 255, 0.637);
+}
+input{
+    width: auto;
+}
+.radio-btn{
+    display: inline;
+    margin: 0;
+    margin-right: 8px;
+}
+.radio-label{
+    margin: 0;
+}
+.radio-section{
+    width: 100%;
+}
+.arg-title{
+    font-size: 1.05em;
+}
 </style>

@@ -50,6 +50,7 @@ export default {
                 {name: 'setvol', categoryId: 'control', description: "Sets the host sound volume (0 - 100)", arguments: [{id: 'volume', dataType: 'int', title: 'The volume to set (0 - 100)', min: 0, max: 100}]},
                 {name: 'volup', categoryId: 'control', description: "Increase the volume of the host compuer", arguments: [{id: 'volume', dataType: 'int', title: 'The volume to increase (1 - 100)', min: 1, max: 100}]},
                 {name: 'voldown', categoryId: 'control', description: "Decrease the volume of the host compuer", arguments: [{id: 'volume', dataType: 'int', title: 'The volume to decrease (1 - 100)', min: 1, max: 100}]},
+                {name: 'screen', categoryId: 'control', description: 'Switch the display settings to the choosen mode', arguments: [{id: 'screen', dataType: 'choice', title: 'The screen mode to set', choices: ['Main', 'Second', 'Duplicate', 'Extend']}]},
                 {name: 'back', categoryId: 'control', description: "Launch alt + f4 to exit all kinds of focused applications"},
                 {name: 'wait', categoryId: 'control', description: "A building-block to create a delay between two actions in a cloud function"},
                 {name: 'loop', categoryId: 'loops', description: "Loop a certain feature or cloud function a certain number of times"},
