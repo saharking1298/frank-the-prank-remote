@@ -13,6 +13,7 @@ import LoginScreen from './components/LoginScreen.vue';
 import socket from './socket';
 import SettingsScreen from './components/SettingsScreen.vue';
 import HostLoginScreen from './components/HostLoginScreen.vue';
+const { createHash } = require('crypto');
 export default {
   components: { ToastMessage, MainScreen, LoginScreen, SettingsScreen, HostLoginScreen },
     data(){
@@ -76,9 +77,13 @@ export default {
             listen: this.listen,
             connectToHost: this.connectToHost,
             sendActionGlobal: this.sendActionGlobal,
+            hash: this.hash,
         };
     },
     methods: {
+        hash(string) {
+            return createHash('sha256').update(string).digest('hex');
+        },
         setScreen(screenId){
             this.currentScreen = screenId;
         },
@@ -137,6 +142,12 @@ export default {
             }
         }
         this.socket.on('partnerStatus', (status) => {this.onHostStatusChange(status)});
+        this.socket.on('connect', () => {
+            console.log('Frank The Prank has connected to socket.')
+        });
+        this.socket.on('disconnect', () => {
+            console.log('Frank The Prank has disconnected from socket.')
+        });
     }
 }
 </script>

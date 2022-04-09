@@ -12,6 +12,7 @@ import CategoryView from './features-screen/CategoryView.vue';
 import FeatureView from './features-screen/FeaturesView.vue';
 import SearchFeature from './features-screen/SearchFeature.vue';
 import FeatureSender from './features-screen/FeatureSender.vue';
+import {detectKeyCombination} from '../../../scripts/QuickBarShortcuts';
 export default {
   components: { CategoryView, SearchFeature, FeatureView, FeatureSender },
   data(){
@@ -47,11 +48,31 @@ export default {
     searchFeature(searchInput, mode){
       this.filterText = searchInput.trim().toLowerCase();
       let str = searchInput.trim();
+      let special = true;
       if(mode === 'enter'){
+        const keyCombination = detectKeyCombination(str);
+
         /* Quick type */
         if(str.startsWith('"') && str.endsWith('"') && str.length > 2){
-          this.sendActionGlobal("type", [str.substring(1, str.length - 1)])
-          this.clearSearchInput();
+          this.sendActionGlobal("type", [str.substring(1, str.length - 1)]);
+        }
+        /* Key Combination */
+        else if(keyCombination.detected){
+          if(keyCombination.times > 1){
+            this.sendActionGlobal("loop", [keyCombination.times, 0, ["keys", [keyCombination.keys]]]);
+          }
+          else if(keyCombination.times === 1){
+            this.sendActionGlobal("keys", [keyCombination.keys]);
+          }
+          else{
+            special = false;
+          }
+        }
+        else{
+          special = false;
+        }
+        if(special){
+          this.setSubScreen("featureCategories");
           return;
         }
       }

@@ -26,7 +26,7 @@
 
 <script>
 export default {
-    inject: ["socket", "showToast", "hideToast", "setMainScreen", "listen"],
+    inject: ["socket", "showToast", "hideToast", "setMainScreen", "listen", "hash"],
     data() {
         return {
             redirectTarget: "hostLoginScreen", // "mainScreen",
@@ -57,9 +57,10 @@ export default {
                 this.showToast(toast);
             }
             else{
+                const hashedPassword = this.hash(this.password);
                 this.socket.connect();
                 if(this.currentChoice === 'Login'){
-                    this.socket.emit("login", "remote", {username: this.username, password: this.password}, (output) => {
+                    this.socket.emit("login", "remote", {username: this.username, password: hashedPassword}, (output) => {
                         if(output.approved){
                             this.setMainScreen(this.redirectTarget);
                         } else{
@@ -69,9 +70,9 @@ export default {
                     });
                 }
                 else{
-                    this.socket.emit("registerRemote", {username: this.username, password: this.password}, async (output) => {
+                    this.socket.emit("registerRemote", {username: this.username, password: hashedPassword}, async (output) => {
                          if(output.approved){
-                            await this.socket.emit("login", "remote", {username: this.username, password: this.password}, () => {
+                            await this.socket.emit("login", "remote", {username: this.username, password: hashedPassword}, () => {
                                 this.setMainScreen(this.redirectTarget);
                             })
                         } else{
