@@ -16,8 +16,8 @@ export default {
             this.setMainScreen("settingsScreen");
         },
         logOut(){
+            this.logoutFromHost();
             this.setMainScreen("hostLoginScreen");
-            this.setHostStatus("unconnected");
         }
     },
     computed: {
@@ -30,7 +30,7 @@ export default {
             }
         }
     },
-    inject: ["setMainScreen", "hostStatus", "setHostStatus"],
+    inject: ["setMainScreen", "hostStatus", "setHostStatus", "io", "logoutFromHost"],
     props: ["current-host"]
 }
 </script>

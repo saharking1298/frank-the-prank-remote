@@ -47,12 +47,12 @@ export default {
             }
             else{
                 const status = await this.connectToHost(hostId, password);
-                if(status.approved){
+                if(status.success){
                     this.setMainScreen("mainScreen");
                     this.setHostStatus("online");
                 }
                 else{
-                    toast.message = "Connection Failed: " + status.message;
+                    toast.message = "Connection Failed: " + status.error;
                     this.showToast(toast);
                 }
             }

@@ -26,7 +26,7 @@
 
 <script>
 export default {
-    inject: ["socket", "showToast", "hideToast", "setMainScreen", "listen", "hash"],
+    inject: ["io", "showToast", "hideToast", "setMainScreen", "listen", "hash", "initSocket"],
     data() {
         return {
             redirectTarget: "hostLoginScreen", // "mainScreen",
@@ -58,29 +58,19 @@ export default {
             }
             else{
                 const hashedPassword = this.hash(this.password);
-                this.socket.connect();
-                if(this.currentChoice === 'Login'){
-                    this.socket.emit("login", "remote", {username: this.username, password: hashedPassword}, (output) => {
-                        if(output.approved){
-                            this.setMainScreen(this.redirectTarget);
-                        } else{
-                            const toast = {duration: 3, style: "fit-style", message: "Connection failed. Message: " + output.message};
-                            this.showToast(toast);
-                        }
-                    });
-                }
-                else{
-                    this.socket.emit("registerRemote", {username: this.username, password: hashedPassword}, async (output) => {
-                         if(output.approved){
-                            await this.socket.emit("login", "remote", {username: this.username, password: hashedPassword}, () => {
-                                this.setMainScreen(this.redirectTarget);
-                            })
-                        } else{
-                            const toast = {duration: 3, style: "fit-style", message: "Connection failed. Message: " + output.message};
-                            this.showToast(toast);
-                        }
-                    })
-                }
+                this.initSocket({
+                    actionType: this.currentChoice.toLowerCase(),
+                    clientType: 'remote',
+                    username: this.username,
+                    password: hashedPassword
+                });
+                this.io.socket.once('connect', () => {
+                    this.setMainScreen(this.redirectTarget);
+                });
+                this.io.socket.on('connect_error', (err) => {
+                    const toast = {duration: 3, style: "fit-style", message: "Connection failed. Message: " + err.message};
+                    this.showToast(toast);
+                });
             }
 
         }

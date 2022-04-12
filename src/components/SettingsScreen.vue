@@ -10,7 +10,7 @@
         <div class="host-card flexbox" v-for="(host, index) in ownedHosts" :key="host.hostId">
             <div class="host-card-id"> {{ host.hostId }} </div>
             <div class="left-wrapper">
-                <span class="host-card-token"> {{ host.token }} </span>
+                <span class="host-card-token"> {{ host.authToken }} </span>
                 <i class="fas fa-redo host-card-reload" @click="changeHostToken(host.hostId)"></i>
                 <i class="fas fa-trash-alt host-card-delete" @click="deleteHost(host.hostId, index)"></i>
             </div>
@@ -25,7 +25,7 @@
 
 <script>
 export default {
-    inject: ["setMainScreen", "showToast", "hideToast", "socket", "listen"],
+    inject: ["setMainScreen", "showToast", "hideToast", "listen"],
 
     data() {
         return {
@@ -38,36 +38,30 @@ export default {
             this.setMainScreen("mainScreen");
         },
         async deleteHost(hostId, hostIndex){
-            await this.listen("deleteHost", hostId);
+            await this.listen("remote.hosts.remove", hostId);
             this.ownedHosts.splice(hostIndex, 1);
         },
         async registerHost(){
             this.hostIdInput = this.hostIdInput.trim();
             if(this.hostIdInput === '') return;
-            const status = await this.listen("registerHost", this.hostIdInput);
-            if(!status.approved){
-                this.showToast({duration: 5, style: "fit-style", message: status.message});
+            const status = await this.listen("remote.hosts.register", this.hostIdInput);
+            if(!status.success){
+                this.showToast({duration: 5, style: "fit-style", message: status.error});
             }
             else{
-                this.ownedHosts.push({hostId: this.hostIdInput, token: status.token});
+                this.ownedHosts.push(status.hostData);
             }
             this.hostIdInput = "";
         },
         async getOwnedHosts(){
-            let output = await this.listen("getOwnedHosts");
-            let hosts;
-             if(output.approved){
-                    hosts = output.hosts;
-            } else{
-                hosts = [];
-            }
-            return hosts;
+            let output = await this.listen("remote.hosts.get");
+            return output.success ? output.hosts : [];
         },
         async changeHostToken(hostId){
-            const status = await this.listen("changeHostToken", hostId);
+            const status = await this.listen("remote.hosts.regenerateToken", hostId);
 
-            if(status.approved){
-                this.ownedHosts.find(host => host.hostId === hostId).token = status.token;
+            if(status.success){
+                this.ownedHosts.find(host => host.hostId === hostId).authToken = status.hostData.authToken;
             }
         }
     },

@@ -18,7 +18,7 @@ export default {
   components: { ToastMessage, MainScreen, LoginScreen, SettingsScreen, HostLoginScreen },
     data(){
         return {
-            socket: socket,
+            io: {socket: null},
             hostStatus: {status: 'unconnected'},
             currentScreen: "remoteLoginScreen",  
             // "mainScreen",
@@ -68,7 +68,7 @@ export default {
             hideToast: this.hideToast,
             setMainScreen: this.setScreen,
             hostStatus: this.hostStatus,
-            socket: this.socket,
+            io: this.io,
             featureCategories: this.featureCategories,
             allFeatures: this.allFeatures,
             setHostStatus: this.setHostStatus,
@@ -78,11 +78,18 @@ export default {
             connectToHost: this.connectToHost,
             sendActionGlobal: this.sendActionGlobal,
             hash: this.hash,
+            initSocket: this.initSocket,
+            logoutFromHost: this.logoutFromHost,
         };
     },
     methods: {
         hash(string) {
             return createHash('sha256').update(string).digest('hex');
+        },
+        initSocket(auth) {
+            this.io.socket = socket(auth);
+            this.registerSocketEvents();
+            this.io.socket.connect();
         },
         setScreen(screenId){
             this.currentScreen = screenId;
@@ -97,9 +104,6 @@ export default {
         sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         },
-        onHostStatusChange(status){
-            this.hostStatus.status = status;
-        },
         setHostStatus(status){
             this.hostStatus.status = status;
         },
@@ -112,20 +116,52 @@ export default {
             }
             this.showToast(toast);
         },
+        registerSocketEvents() {
+            this.io.socket.on('partnerStatus', (status) => {
+                if(status === 'terminated') {
+                    this.setHostStatus('unconnected');
+                    const toast = {
+                        message: `You have been kicked by a remote with higher priority`,
+                        style: "fit-style",
+                        duration: 5
+                    };
+                    this.showToast(toast);
+                    this.logoutFromHost(false);
+                }
+                else {
+                    this.setHostStatus(status);
+                }
+            });
+            this.io.socket.on('connect', () => {
+                console.log('Frank The Prank has connected to socket.')
+            });
+            this.io.socket.on('disconnect', () => {
+                console.log('Frank The Prank has disconnected from socket.')
+            });
+        },
+        logoutFromHost(action=true) {
+            this.setHostStatus("unconnected");
+            if(this.currentHost !== ''){
+                this.currentHost = '';
+                if(action) {
+                    this.io.socket.emit('remote.host.disconnect');
+                }
+            }
+        },
         async directTalk(content){
             const status = await this.listen("directTalk", content);
             return status;
         },
         async connectToHost(hostId, password){
-            const status = await this.listen("connectToHost", hostId, password);
-            if (status.approved){
+            const status = await this.listen("remote.host.connect", hostId, password);
+            if (status.success){
                 this.currentHost = hostId;
             }
             return status;
         },
         async listen(event, ...args){
             let response;
-            this.socket.emit(event, ...args, (output) => {
+            this.io.socket.emit(event, ...args, (output) => {
                 response = output;
             });
             while(!response){
@@ -141,13 +177,6 @@ export default {
                 this.allFeatures[i]["arguments"] = [];
             }
         }
-        this.socket.on('partnerStatus', (status) => {this.onHostStatusChange(status)});
-        this.socket.on('connect', () => {
-            console.log('Frank The Prank has connected to socket.')
-        });
-        this.socket.on('disconnect', () => {
-            console.log('Frank The Prank has disconnected from socket.')
-        });
     }
 }
 </script>
