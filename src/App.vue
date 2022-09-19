@@ -108,12 +108,12 @@ export default {
             this.hostStatus.status = status;
         },
         sendActionGlobal(featureName, featureArgs){
-            this.directTalk({namespace: "feature", eventName: featureName, eventArgs: featureArgs});
+            this.directTalk('features.activate', {featureName, featureArgs});
             const toast = {
                 message: `Feature "${featureName}" has been sent to host.`,
                 style: "fit-style",
                 duration: 3
-            }
+            };
             this.showToast(toast);
         },
         registerSocketEvents() {
@@ -132,8 +132,12 @@ export default {
                     this.setHostStatus(status);
                 }
             });
-            this.io.socket.on('connect', () => {
+            this.io.socket.on('connect', async () => {
                 console.log('Frank The Prank has connected to socket.')
+                if(this.currentHost !== '') {
+                    const hostStatus = await this.listen('remote.host.getStatus');
+                    this.setHostStatus(hostStatus.status);
+                }
             });
             this.io.socket.on('disconnect', () => {
                 console.log('Frank The Prank has disconnected from socket.')
@@ -148,8 +152,9 @@ export default {
                 }
             }
         },
-        async directTalk(content){
-            const status = await this.listen("directTalk", content);
+        async directTalk(name, content){
+            const status = await this.listen("directTalk", {name, event: content});
+            console.log(status);
             return status;
         },
         async connectToHost(hostId, password){

@@ -8,7 +8,7 @@
 export default {
     data(){
         return{
-            screens: [{name: "Features", id: "features"}, {name: "Functions", id:"functions"}, {name: "File Browser", id:"file-browser"}]
+            screens: [{name: "Features", id: "features"}, {name: "Functions", id:"functions"}, {name: "File Browser", id:"files"}]
         };
     },
     methods: {
