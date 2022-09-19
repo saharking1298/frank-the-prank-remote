@@ -46,6 +46,11 @@ export default {
             this.$refs[element].focus();
         },
         login(){
+            const passwordValidator = (password) => {
+                // The password must be at least 8 characters long, and contain at least one number, one letter
+                const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+                return regex.test(password.trim());
+            };
             let toast = {duration: 5, style: "fit-style"};
             this.username = this.username.trim();
             if(this.username === ''){
@@ -56,7 +61,7 @@ export default {
                 toast.message = "Please enter your password";
                 this.showToast(toast);
             }
-            else{
+            else if(this.currentChoice === 'Login' || passwordValidator(this.password)){
                 const hashedPassword = this.hash(this.password);
                 this.initSocket({
                     actionType: this.currentChoice.toLowerCase(),
@@ -71,6 +76,10 @@ export default {
                     const toast = {duration: 3, style: "fit-style", message: "Connection failed. Message: " + err.message};
                     this.showToast(toast);
                 });
+            }
+            else {
+                toast.message = "Password must be at least 8 characters long, and contain at least one number, one letter.";
+                this.showToast(toast);
             }
 
         }
