@@ -1,18 +1,21 @@
 <template>
     <div id="wrapper">
-        <input type="text" placeholder="Enter a path here..." onclick="this.select()" v-model="pathInput" @keydown.enter="updatePath">
-        <p> {{ label }} </p>
-        <ul>
-            <li v-for="(item, index) in items" :key="index" @click="onItemClick(index)" :class="index % 2 == 0 ? 'li-dark' : 'li-light'">
-                <i :class="item.styleClass"></i>
-                {{ item.title }}
-            </li>
-        </ul>
+        <input type="text" placeholder="Enter a path here..." v-model="pathInput" @keydown.enter="updatePath" class="textbox">
+        <div class="file-browser">
+             <p class="file-browser-label"> {{ label }} </p>
+            <file-list :files="files"> </file-list>
+        </div>
+        <div v-if="path === '' && favorites.length > 0">
+            <p class="file-browser-label"> Quick access: </p>
+            <file-list :files="favorites"> </file-list>
+        </div>
     </div>
 </template>
 
 <script>
+import FileList from './files-screen/FileList.vue';
 export default {
+    components: { FileList },
     inject: ["directTalk"],
     data() {
         return {
@@ -21,20 +24,77 @@ export default {
             pathBackup: "",
             labels: {
                 driveSelection: "Select a drive:",
-                folderSelection: "Select a folder:"                
+                fileSelection: "Select a file:"                
             },
             label: "",
-            items: [],
+            files: [],
+            favorites: [],
+        }
+    },
+    provide() {
+        return {
+           onFileClick: this.onFileClick,
+           onStarClick: this.onStarClick, 
         }
     },
     methods: {
         updatePath() {
             this.pathInput = this.pathInput.trim();
             if (this.pathInput !== this.path) {
-                this.fetch(this.pathInput);
+                this.fetchFiles(this.pathInput);
             }
         },
-        async fetch(path) {
+        getFullPath(path) {
+            const root = this.path;
+            let result;
+            if(root === ''){
+                result = path;
+            }
+            else if(root.endsWith("\\")) {
+                result = root + path;
+            }
+            else {
+                result = root + "\\" + path;
+            }
+            return result;
+        },
+        getBaseName(path) {
+            if (path.endsWith("\\")) {
+                path = path.slice(0, -1);
+            }
+            if (path.endsWith(":") && path.length == 2) {
+                return path + "\\";
+            }
+            path = path.split("\\");
+            path = path[path.length - 1];
+            return path;
+        },
+        getBaseDir(path) {
+            if (path.endsWith("\\")) {
+                path = path.slice(0, -1);
+            }
+            path = path.split("\\");
+            path.pop();
+            path = path.join("\\");
+            if (path.endsWith(":")) {
+                path += "\\";
+            }
+            return path;
+        },
+        setFavorites(entries) {
+            const favorites = [];
+            for (let entry of entries) {
+                favorites.push({
+                    name: this.getBaseName(entry.path),
+                    path: entry.path,
+                    type: entry.type,
+                    favorite: true 
+                })
+            }
+            this.favorites = favorites;
+        },
+        async fetchFiles(path="") {
+            let fullPath;
             this.pathBackup = this.path;
             this.path = path;
             this.pathInput = this.path;
@@ -42,86 +102,80 @@ export default {
                 this.label = this.labels.driveSelection;
             }
             else {
-                this.label = this.labels.folderSelection;
+                this.label = this.labels.fileSelection;
             }
-            const items = await this.directTalk("files.listDir", this.path);
-            if (items !== "Error") {
+            const files = await this.directTalk("files.listDir", this.path);
+            if (files !== "Error") {
                 if(this.path !== "") {
-                    items.unshift({title: "..", type: "back"});
+                    files.unshift({name: "..", type: "back"});
                 }
-                for (let item of items) {
-                    if (item.type.startsWith(".")) {
-                        item.styleClass = "far fa-file";
-                    }
-                    switch (item.type) {
-                        case "folder":
-                        case "back":
-                            item.styleClass = "far fa-folder";
-                            break;
-                        case "drive":
-                            item.styleClass = "far fa-hdd";
-                            break;
+                for (let file of files) {
+                    fullPath = this.getFullPath(file.name);
+                    file.path = fullPath;
+                    if(this.favorites.find(file => file.path === fullPath)) {
+                        file.favorite = true;
                     }
                 }
-                this.items = items;
+                this.files = files;
             }
             else {
-                this.fetch(this.pathBackup);
+                this.fetchFiles(this.pathBackup);
             }
         },
-        async onItemClick(index) {
-            const item = this.items[index];
+        async onFileClick(file) {
             let path = this.path;
-            if (item.type.startsWith(".")) {
+            if (file.type.startsWith(".")) {
                 return;
             }
-            if(item.type === 'back') {
-                if (path.endsWith("\\")) {
-                    path = path.slice(0, -1);
-                }
-                path = path.split("\\");
-                path.pop();
-                path = path.join("\\");
-                if (path.endsWith(":")) {
-                    path += "\\";
-                }
+            if(file.type === 'back') {
+                path = this.getBaseDir(path);
             }
             else {
-                if (path !== '' && !path.endsWith('\\')) {
-                    path += '\\';
-                }
-                path += item.title;
+                path = file.path;
             }
-            this.fetch(path); 
-        }
+            this.fetchFiles(path); 
+        },
+        async onStarClick(file) {
+            const response = await this.directTalk("files.toggleFavorite", file.path);
+            if(response.success) {
+                if(response.isFavorite) {
+                    file.favorite = true;
+                    this.favorites.push(file);
+                }
+                else {
+                    file.favorite = false;
+                    this.favorites.splice(this.favorites.findIndex(entry => entry.path === file.path), 1);
+                }
+            }
+            console.log(this.favorites);
+        },
     },
     async created() {
-        this.label = this.labels.driveSelection;
-        this.fetch("");
+        this.setFavorites(await this.directTalk("files.getFavorites"));
+        this.fetchFiles();
     },
 }
 </script>
 
 <style scoped>
+p {
+    margin-bottom: 8px;
+}
 #wrapper{
     margin-top: 60px;
     margin-bottom: 40px;
+    margin-right: 12px;
+    padding-left: 12px;
 }
-ul {
-    list-style: none;
-    margin-right: 20px;
-    /* padding: 0; */
+.file-browser {
+    margin-bottom: 8px;
 }
-li {
-    padding-left: 10px;
-    cursor: pointer;
+.textbox {
+    width: 100%;
+    margin-right: 0;
+    margin-left: 0;
 }
-.li-light{
-    background: rgb(197, 206, 214);
-    color: rgb(139, 139, 139);
-}
-.li-dark{
-    color: rgb(197, 206, 214);
-    background: rgb(153, 153, 153);
+.file-browser-label {
+    color: gray;
 }
 </style>
