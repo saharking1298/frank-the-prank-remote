@@ -1,13 +1,15 @@
 <template>
     <ul>
         <li v-for="(file, index) in files" :key="index" :class="index % 2 == 0 ? 'li-dark' : 'li-light'">
-            <span class="li-left" @click="onFileClick(file)">
-                <i :class="getIconClass(file)" class="file-icon"></i>
-                <span class="cursor-pointer file-name"> {{ file.name }} </span>
-            </span>
-            <span class="li-right" @click="onStarClick(file)">
-                <i class="fa-star cursor-pointer" :class="file.favorite ? 'fas favorite' : 'far'" v-if="file.type !== 'back'"></i>
-            </span>
+            <div class="flexbox" v-if="file.type !== 'unknown'">
+                <span class="li-left" @click="onFileClick(file)">
+                    <i :class="getIconClass(file)" class="file-icon"></i>
+                    <span class="cursor-pointer file-name"> {{ file.name }} </span>
+                </span>
+                <span class="li-right" @click="onStarClick(file)">
+                    <i class="fa-star cursor-pointer" :class="file.favorite ? 'fas favorite' : 'far'" v-if="file.type !== 'back'"></i>
+                </span>
+            </div>
         </li>
     </ul>
 </template>
@@ -84,5 +86,9 @@ li {
 }
 .file-name {
     overflow-wrap: anywhere;
+}
+.flexbox {
+    display: flex;
+    width: 100%;
 }
 </style>

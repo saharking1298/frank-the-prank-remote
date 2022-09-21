@@ -1,13 +1,17 @@
 <template>
     <div id="wrapper">
-        <input type="text" placeholder="Enter a path here..." v-model="pathInput" @keydown.enter="updatePath" class="textbox">
+        <div class="flexbox">
+            <input type="text" placeholder="Enter a path here..." v-model="pathInput" @keydown.enter="updatePath" class="textbox">
+            <i class="fas fa-home icon" @click="onHomeClick"></i>
+            <i class="fas fa-sync-alt icon" @click="refresh"></i>
+        </div>
         <div class="file-browser">
              <p class="file-browser-label"> {{ label }} </p>
             <file-list :files="files"> </file-list>
         </div>
-        <div v-if="path === '' && favorites.length > 0">
+        <div v-if="path === '' && favorites.files.length > 0">
             <p class="file-browser-label"> Quick access: </p>
-            <file-list :files="favorites"> </file-list>
+            <file-list :files="favorites.files"> </file-list>
         </div>
     </div>
 </template>
@@ -28,7 +32,7 @@ export default {
             },
             label: "",
             files: [],
-            favorites: [],
+            favorites: {paths: [], files: {}},
         }
     },
     provide() {
@@ -38,6 +42,16 @@ export default {
         }
     },
     methods: {
+        async refresh() {
+            this.setFavorites(await this.directTalk("files.getFavorites"));
+            this.files = [];
+            this.fetchFiles(this.path);
+        },
+        onHomeClick() {
+            if(this.path !== '') {
+                this.fetchFiles();
+            }
+        },
         updatePath() {
             this.pathInput = this.pathInput.trim();
             if (this.pathInput !== this.path) {
@@ -83,15 +97,19 @@ export default {
         },
         setFavorites(entries) {
             const favorites = [];
+            this.favorites.paths = [];
             for (let entry of entries) {
-                favorites.push({
-                    name: this.getBaseName(entry.path),
-                    path: entry.path,
-                    type: entry.type,
-                    favorite: true 
-                })
+                this.favorites.paths.push(entry.path);
+                if (entry.type !== 'unknown') {
+                    favorites.push({
+                        name: this.getBaseName(entry.path),
+                        path: entry.path,
+                        type: entry.type,
+                        favorite: true 
+                    });
+                }
             }
-            this.favorites = favorites;
+            this.favorites.files = favorites;
         },
         async fetchFiles(path="") {
             let fullPath;
@@ -112,7 +130,7 @@ export default {
                 for (let file of files) {
                     fullPath = this.getFullPath(file.name);
                     file.path = fullPath;
-                    if(this.favorites.find(file => file.path === fullPath)) {
+                    if(this.favorites.paths.includes(fullPath)) {
                         file.favorite = true;
                     }
                 }
@@ -140,11 +158,13 @@ export default {
             if(response.success) {
                 if(response.isFavorite) {
                     file.favorite = true;
-                    this.favorites.push(file);
+                    this.favorites.paths.push(file.path);
+                    this.favorites.files.push(file);
                 }
                 else {
                     file.favorite = false;
-                    this.favorites.splice(this.favorites.findIndex(entry => entry.path === file.path), 1);
+                    this.favorites.paths.splice(this.favorites.paths.indexOf(file.path), 1);
+                    this.favorites.files.splice(this.favorites.files.findIndex(entry => entry.path === file.path), 1);
                 }
             }
             console.log(this.favorites);
@@ -166,6 +186,8 @@ p {
     margin-bottom: 40px;
     margin-right: 12px;
     padding-left: 12px;
+    background: rgb(197, 206, 214);
+    color: rgb(139, 139, 139);
 }
 .file-browser {
     margin-bottom: 8px;
@@ -177,5 +199,16 @@ p {
 }
 .file-browser-label {
     color: gray;
+}
+.flexbox {
+    display: flex;
+    width: 100%;
+}
+.icon {
+    margin-left: 8px;
+    cursor: pointer;
+    min-width: 16px;
+    font-size: 1.1em;
+    margin-top: 5px;
 }
 </style>
