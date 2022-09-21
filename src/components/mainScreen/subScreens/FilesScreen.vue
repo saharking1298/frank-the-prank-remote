@@ -1,36 +1,45 @@
 <template>
     <div id="wrapper">
-        <div class="flexbox">
-            <input type="text" placeholder="Enter a path here..." v-model="pathInput" @keydown.enter="updatePath" class="textbox">
-            <i class="fas fa-home icon" @click="onHomeClick"></i>
-            <i class="fas fa-sync-alt icon" @click="refresh"></i>
+        <div v-if="subScreen === 'file-browser'">
+            <div class="flexbox">
+                <input type="text" placeholder="Enter a path here..." v-model="inputPath" @keydown.enter="updatePath" class="textbox">
+                <i class="fas fa-home icon" @click="onHomeClick"></i>
+                <i class="fas fa-sync-alt icon" @click="refresh"></i>
+            </div>
+            <div class="file-browser">
+                <p class="file-browser-label"> {{ currentLabel }} </p>
+                <file-list :files="files"> </file-list>
+            </div>
+            <div v-if="path === '' && favorites.files.length > 0">
+                <p class="file-browser-label"> Quick access: </p>
+                <file-list :files="favorites.files"> </file-list>
+            </div>
         </div>
-        <div class="file-browser">
-             <p class="file-browser-label"> {{ label }} </p>
-            <file-list :files="files"> </file-list>
-        </div>
-        <div v-if="path === '' && favorites.files.length > 0">
-            <p class="file-browser-label"> Quick access: </p>
-            <file-list :files="favorites.files"> </file-list>
-        </div>
+        <file-view v-if="subScreen === 'file-view'" :file="currentFile"> </file-view>
     </div>
+
 </template>
 
 <script>
 import FileList from './files-screen/FileList.vue';
+import FileView from './files-screen/FileView.vue';
+import { getBaseName, getBaseDir } from '../../../scripts/FileManager.js';
+
 export default {
-    components: { FileList },
+    components: { FileList, FileView },
     inject: ["directTalk"],
     data() {
         return {
-            pathInput: "",
+            subScreen: "file-browser",
+            inputPath: "",
             path: "",
             pathBackup: "",
             labels: {
                 driveSelection: "Select a drive:",
                 fileSelection: "Select a file:"                
             },
-            label: "",
+            currentLabel: "",
+            currentFile: "",
             files: [],
             favorites: {paths: [], files: {}},
         }
@@ -38,10 +47,14 @@ export default {
     provide() {
         return {
            onFileClick: this.onFileClick,
-           onStarClick: this.onStarClick, 
+           onStarClick: this.onStarClick,
+           setSubScreen: this.setSubScreen,
         }
     },
     methods: {
+        setSubScreen(screen) {
+            this.subScreen = screen;
+        },
         async refresh() {
             this.setFavorites(await this.directTalk("files.getFavorites"));
             this.files = [];
@@ -53,9 +66,9 @@ export default {
             }
         },
         updatePath() {
-            this.pathInput = this.pathInput.trim();
-            if (this.pathInput !== this.path) {
-                this.fetchFiles(this.pathInput);
+            this.inputPath = this.inputPath.trim();
+            if (this.inputPath !== this.path) {
+                this.fetchFiles(this.inputPath);
             }
         },
         getFullPath(path) {
@@ -72,29 +85,6 @@ export default {
             }
             return result;
         },
-        getBaseName(path) {
-            if (path.endsWith("\\")) {
-                path = path.slice(0, -1);
-            }
-            if (path.endsWith(":") && path.length == 2) {
-                return path + "\\";
-            }
-            path = path.split("\\");
-            path = path[path.length - 1];
-            return path;
-        },
-        getBaseDir(path) {
-            if (path.endsWith("\\")) {
-                path = path.slice(0, -1);
-            }
-            path = path.split("\\");
-            path.pop();
-            path = path.join("\\");
-            if (path.endsWith(":")) {
-                path += "\\";
-            }
-            return path;
-        },
         setFavorites(entries) {
             const favorites = [];
             this.favorites.paths = [];
@@ -102,7 +92,7 @@ export default {
                 this.favorites.paths.push(entry.path);
                 if (entry.type !== 'unknown') {
                     favorites.push({
-                        name: this.getBaseName(entry.path),
+                        name: getBaseName(entry.path),
                         path: entry.path,
                         type: entry.type,
                         favorite: true 
@@ -111,16 +101,20 @@ export default {
             }
             this.favorites.files = favorites;
         },
+        showFileDetails(file) {
+            this.currentFile = file;
+            this.setSubScreen('file-view');
+        },
         async fetchFiles(path="") {
             let fullPath;
             this.pathBackup = this.path;
             this.path = path;
-            this.pathInput = this.path;
+            this.inputPath = this.path;
             if (this.path === ''){
-                this.label = this.labels.driveSelection;
+                this.currentLabel = this.labels.driveSelection;
             }
             else {
-                this.label = this.labels.fileSelection;
+                this.currentLabel = this.labels.fileSelection;
             }
             const files = await this.directTalk("files.listDir", this.path);
             if (files !== "Error") {
@@ -143,10 +137,10 @@ export default {
         async onFileClick(file) {
             let path = this.path;
             if (file.type.startsWith(".")) {
-                return;
+                return this.showFileDetails(file);
             }
             if(file.type === 'back') {
-                path = this.getBaseDir(path);
+                path = getBaseDir(path);
             }
             else {
                 path = file.path;

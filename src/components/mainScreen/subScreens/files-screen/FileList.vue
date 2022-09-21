@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import getFileFormat from '../../../../scripts/FileManager.js';
+import { getFileFormat } from '../../../../scripts/FileManager.js';
 export default {
     name: 'FileList',
     props: {

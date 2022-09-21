@@ -60,7 +60,8 @@ const fileFormats = [
     ]},
     {format: "document", plain: false, style: "far fa-file-word", formats:[
         ".doc",
-        ".docx"
+        ".docx",
+        ".rtf"
     ]},
     {format: "document", plain: false, style: "far fa-file-excel", formats:[
         ".xls",
@@ -104,9 +105,84 @@ const fileFormats = [
     ]},
 ];
 
-export default function(format) {
+const sizeUnits = [
+    {
+        unit: 'Bytes',
+        size: n => n / Math.pow(1000, 0),
+        validator: n => n < Math.pow(1000, 1)
+    },
+    {
+        unit: 'KB',
+        size: n => n / Math.pow(1000, 1),
+        validator: n => n < Math.pow(1000, 2)
+    },
+    {
+        unit: 'MB',
+        size: n => n / Math.pow(1000, 2),
+        validator: n => n < Math.pow(1000, 3)
+    },
+    {
+        unit: 'GB',
+        size: n => n / Math.pow(1000, 3),
+        validator: n => n < Math.pow(1000, 4)
+    },
+];
+
+export function getFileFormat (format) {
     const result = fileFormats.find(entry => entry.formats.includes(format.toLowerCase()));
     if (result) {
         return {format: result.format, plain: result.plain, style: result.style};
     }
+    else {
+        return {format: 'file', plain: false, style: 'far fa-file'}; 
+    }
+}
+
+export function getFileSize(bytes) {
+    if (!isNaN(bytes)) {
+        const unit = sizeUnits.find(entry => entry.validator(bytes));
+        let size = unit.size(bytes);
+        if (unit.unit !== 'Bytes') {
+            size = (Math.round(size * 100) / 100).toFixed(2);
+        }
+        return `${size} ${unit.unit}`;
+    }
+    else {
+        return 'Unknown';
+    }
+}
+
+export function getLastModified(seconds) {
+    try {
+        const date = new Date(seconds * 1000);
+        return date.toLocaleString();
+    }
+    catch {
+        return 'Unknown';
+    }
+}
+
+export function getBaseName(path) {
+    if (path.endsWith("\\")) {
+        path = path.slice(0, -1);
+    }
+    if (path.endsWith(":") && path.length == 2) {
+        return path + "\\";
+    }
+    path = path.split("\\");
+    path = path[path.length - 1];
+    return path;
+}
+
+export function getBaseDir(path) {
+    if (path.endsWith("\\")) {
+        path = path.slice(0, -1);
+    }
+    path = path.split("\\");
+    path.pop();
+    path = path.join("\\");
+    if (path.endsWith(":")) {
+        path += "\\";
+    }
+    return path;
 }
