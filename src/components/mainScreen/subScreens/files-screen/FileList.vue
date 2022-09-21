@@ -3,7 +3,7 @@
         <li v-for="(file, index) in files" :key="index" :class="index % 2 == 0 ? 'li-dark' : 'li-light'">
             <div class="flexbox" v-if="file.type !== 'unknown'">
                 <span class="li-left" @click="onFileClick(file)">
-                    <i :class="getIconClass(file)" class="file-icon"></i>
+                    <i :class="getIconStyle(file)" class="file-icon"></i>
                     <span class="cursor-pointer file-name"> {{ file.name }} </span>
                 </span>
                 <span class="li-right" @click="onStarClick(file)">
@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import getFileFormat from '../../../../scripts/FileManager.js';
 export default {
     name: 'FileList',
     props: {
@@ -24,24 +25,16 @@ export default {
         }
     },
     methods: {
-        getIconClass(file) {
-            let styleClass;
+        getIconStyle(file) {
+            let style;
             if (file.type.startsWith(".")) {
-                styleClass = "far fa-file";
+                style = "far fa-file";
             }
-            switch (file.type) {
-                case "folder":
-                case "back":
-                    styleClass = "far fa-folder";
-                    break;
-                case "drive":
-                    styleClass = "far fa-hdd";
-                    break;
-                case "unknown":
-                    styleClass = "fas fa-question"
-                    break;
+            const match = getFileFormat(file.type);
+            if (match) {
+                style = match.style;
             }
-            return styleClass;
+            return style;
         }
     },
     inject: ["onFileClick", "onStarClick"]
