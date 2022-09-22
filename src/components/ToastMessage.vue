@@ -54,7 +54,8 @@ export default {
 <style scoped>
 .custom-toast{
     position: fixed;
-    width: fit-content;
+    width: max-content;
+    max-width: 100%;
     left: 50%;
     transform: translateX(-50%);
     bottom: 40px;
