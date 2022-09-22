@@ -5,15 +5,24 @@
             <h2 class="title"> File Details: </h2>
         </div>
         <div v-if="details">
-            <p>
-                <strong> File Root: </strong> {{ details.root }}
-                <br>
-                <strong> File Name: </strong> {{ file.name }}
-                <br>
-                <strong> File Size: </strong> {{ details.size }}
-                <br>
-                <strong> Last Modified: </strong> {{ details.lastModified }}
-            </p>
+            <table class="file-details">
+                <tr>
+                    <td> File Root: </td>
+                    <td> {{ details.root }} </td>
+                </tr>
+                <tr>
+                    <td> File Name: </td>
+                    <td> {{ file.name }} </td>
+                </tr>
+                <tr>
+                    <td> File Size: </td>
+                    <td> {{ details.size }} </td>
+                </tr>
+                <tr>
+                    <td> Last Modified: </td>
+                    <td> {{ details.lastModified }} </td>
+                </tr>
+            </table>
             <h3> Actions </h3>
             <div class="action-btn" @click="fileAction('play')" v-if="details.format.format === 'audio'"> Play </div>
             <div class="action-btn" @click="fileAction('edit')" v-if="details.format.plain"> Edit </div>
@@ -97,5 +106,30 @@ h3 {
     text-align: center;
     margin-bottom: 10px;
     padding-bottom: 1px;
+    width: 110px;
+    margin-left: auto;
+    margin-right: auto;
+    user-select: none;
+    cursor: pointer;
+}
+table {
+    table-layout: fixed;
+    margin-bottom: 12px;
+}
+table, th, td {
+  border: 1px solid;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+td {
+    word-wrap: break-word;
+}
+@media screen and (max-width: 420px) {
+    table {
+        width: 94vw;
+    }
+    tr td:nth-child(1) {
+        width: 30%;
+    }
 }
 </style>
