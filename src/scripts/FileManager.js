@@ -76,11 +76,12 @@ const fileFormats = [
         ".cpp",
         ".cs",
         ".h",
+        ".hpp",
         ".java",
         ".php",
         ".py",
         ".pyw",
-        "sh",
+        ".sh",
         ".bat",
         ".swift",
         ".vb",
@@ -90,12 +91,12 @@ const fileFormats = [
         ".js",
         ".mjs",
         ".css",
-        ".html"
+        ".html",
+        ".ejs"
     ]},
     {format: "document", plain: true, style: "far fa-file-alt", formats:[
         ".txt",
-        ".log",
-        ".ini"
+        ".log"
     ]},
     {format: "shortcut", plain: false, style: "far fa-share", formats:[
         ".lnk"
@@ -142,7 +143,7 @@ export function getFileSize(bytes) {
     if (!isNaN(bytes)) {
         const unit = sizeUnits.find(entry => entry.validator(bytes));
         let size = unit.size(bytes);
-        if (unit.unit !== 'Bytes') {
+        if (unit.unit !== 'Bytes' && size % 1 !== 0) {
             size = (Math.round(size * 100) / 100).toFixed(2);
         }
         return `${size} ${unit.unit}`;

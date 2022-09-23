@@ -51,7 +51,7 @@ export default {
                 const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
                 return regex.test(password.trim());
             };
-            let toast = {duration: 5, style: "fit-style"};
+            let toast = {duration: 5};
             this.username = this.username.trim();
             if(this.username === ''){
                 toast.message = "Please enter your username";
@@ -73,7 +73,7 @@ export default {
                     this.setMainScreen(this.redirectTarget);
                 });
                 this.io.socket.on('connect_error', (err) => {
-                    const toast = {duration: 3, style: "fit-style", message: "Connection failed. Message: " + err.message};
+                    const toast = {duration: 3, message: "Connection failed. Message: " + err.message};
                     this.showToast(toast);
                 });
             }

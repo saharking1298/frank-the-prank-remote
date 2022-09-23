@@ -40,7 +40,7 @@ export default {
         async connect(){
             const hostId = this.hostIdInput.trim();
             const password = this.passwordInput.trim();
-            let toast = {style: 'fit-style', duration: 5};
+            let toast = {duration: 5};
             if (hostId === ''){
                 toast.message = "Please enter a host Id.";
                 this.showToast(toast);

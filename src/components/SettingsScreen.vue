@@ -46,7 +46,7 @@ export default {
             if(this.hostIdInput === '') return;
             const status = await this.listen("remote.hosts.register", this.hostIdInput);
             if(!status.success){
-                this.showToast({duration: 5, style: "fit-style", message: status.error});
+                this.showToast({duration: 5, message: status.error});
             }
             else{
                 this.ownedHosts.push(status.hostData);

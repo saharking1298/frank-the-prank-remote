@@ -1,5 +1,5 @@
 <template>
-  <div class="custom-toast fade-in" :class="toastStyle" v-if="visible"> {{ toastMessage }} </div>
+  <div class="custom-toast fade-in toast-blue" v-if="visible"> {{ toastMessage }} </div>
 </template>
 
 <script>
@@ -66,12 +66,7 @@ export default {
     font-size: 1.05em;
     z-index: 100;
 }
-.red-style{
-    background-color: tomato;
-    border: 2px solid rgb(211, 68, 43);
-    color: rgb(150, 40, 20);
-}
-.fit-style{
+.toast-blue{
     background-color: rgb(12, 138, 138);
     color: rgb(1, 68, 68);
     border: 2px solid rgb(12, 92, 92);

@@ -4,10 +4,12 @@
     <settings-screen v-else-if="currentScreen === 'settingsScreen'"> </settings-screen>
     <host-login-screen v-else-if="currentScreen === 'hostLoginScreen'"> </host-login-screen>
     <toast-message :toast-message="currentToast.message" :toast-duration="currentToast.duration" :toast-style="currentToast.style" :toast-activator="toastActivator" :toast-hider="toastHider"> </toast-message>
+    <modal-popup :modal="modal" v-if="modal.visible"> </modal-popup>
 </template>
 
 <script>
 import ToastMessage from './components/ToastMessage.vue';
+import ModalPopup from './components/ModalPopup.vue';
 import MainScreen from './components/MainScreen.vue';
 import LoginScreen from './components/LoginScreen.vue';
 import socket from './socket';
@@ -15,7 +17,7 @@ import SettingsScreen from './components/SettingsScreen.vue';
 import HostLoginScreen from './components/HostLoginScreen.vue';
 const { createHash } = require('crypto');
 export default {
-  components: { ToastMessage, MainScreen, LoginScreen, SettingsScreen, HostLoginScreen },
+  components: { ToastMessage, MainScreen, LoginScreen, SettingsScreen, HostLoginScreen, ModalPopup },
     data(){
         return {
             io: {socket: null},
@@ -26,6 +28,7 @@ export default {
             currentToast: {},
             toastActivator: false,
             toastHider: false,
+            modal: {visible: false},
             featureCategories: [{name: "All Categories", id: "all"}, {name: "Mouse & Keyboard", id: "mouseKeyboard"}, {name: "Multimedia", id: "multimedia"}, {name: "Power Control", id: "power"}, {name: "Trickshots", id: "tricks"}, {name: "Loops", id: "loops"}, {name: "Advanced Control", id: "control"}],
             allFeatures: [
                 {name: 'click', categoryId: 'mouseKeyboard', description: 'Clicks the mouse in a certain loaction on the screen', arguments: [{id: 'button', dataType: 'choice', title: 'The button to press', choices: ['Left', 'Right', 'Middle'], manipulator: (choice) => {return choice.toLowerCase()}}]},
@@ -80,11 +83,20 @@ export default {
             hash: this.hash,
             initSocket: this.initSocket,
             logoutFromHost: this.logoutFromHost,
+            showModal: this.showModal,
+            hideModal: this.hideModal,
         };
     },
     methods: {
         hash(string) {
             return createHash('sha256').update(string).digest('hex');
+        },
+        showModal(modal) {
+            modal.visible = true;
+            this.modal = modal;
+        },
+        hideModal() {
+            this.modal = {visible: false};
         },
         initSocket(auth) {
             this.io.socket = socket(auth);
@@ -111,7 +123,6 @@ export default {
             this.directTalk('features.activate', {featureName, featureArgs});
             const toast = {
                 message: `Feature "${featureName}" has been sent to host.`,
-                style: "fit-style",
                 duration: 3
             };
             this.showToast(toast);
@@ -122,7 +133,6 @@ export default {
                     this.setHostStatus('unconnected');
                     const toast = {
                         message: `You have been kicked by a remote with higher priority`,
-                        style: "fit-style",
                         duration: 5
                     };
                     this.showToast(toast);
@@ -236,5 +246,16 @@ fade-in-quick{
 }
 .fade-enter, .fade-leave-to {
   opacity: 0;
+}
+.action-btn {
+    font-size: 1.03em;
+    font-weight: bold;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 10px;
+    padding-bottom: 1px;
+    user-select: none;
+    cursor: pointer;
+    transition: all 0.15s;
 }
 </style>

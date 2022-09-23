@@ -49,11 +49,15 @@ export default {
            onFileClick: this.onFileClick,
            onStarClick: this.onStarClick,
            setSubScreen: this.setSubScreen,
+           refresh: this.refresh,
         }
     },
     methods: {
         setSubScreen(screen) {
             this.subScreen = screen;
+            if (screen === 'file-browser') {
+                this.fetchFiles(this.path);   
+            }
         },
         async refresh() {
             this.setFavorites(await this.directTalk("files.getFavorites"));
