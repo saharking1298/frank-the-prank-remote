@@ -1,21 +1,24 @@
 <template>
-    <div id="wrapper">
-        <div v-if="subScreen === 'file-browser'">
-            <div class="flexbox">
-                <input type="text" placeholder="Enter a path here..." v-model="inputPath" @keydown.enter="updatePath" class="textbox">
-                <i class="fas fa-home icon" @click="onHomeClick"></i>
-                <i class="fas fa-sync-alt icon" @click="refresh"></i>
+    <div id="wrapper" class="fade-in">
+        <div v-if="hostStatus.status != 'unconnected'">
+            <div v-if="subScreen === 'file-browser'">
+                <div class="flexbox">
+                    <input type="text" placeholder="Enter a path here..." v-model="inputPath" @keydown.enter="updatePath" class="textbox">
+                    <i class="fas fa-home icon" @click="onHomeClick"></i>
+                    <i class="fas fa-sync-alt icon" @click="refresh"></i>
+                </div>
+                <div class="file-browser">
+                    <p class="file-browser-label"> {{ currentLabel }} </p>
+                    <file-list :files="files"> </file-list>
+                </div>
+                <div v-if="path === '' && favorites.files.length > 0">
+                    <p class="file-browser-label"> Quick access: </p>
+                    <file-list :files="favorites.files"> </file-list>
+                </div>
             </div>
-            <div class="file-browser">
-                <p class="file-browser-label"> {{ currentLabel }} </p>
-                <file-list :files="files"> </file-list>
-            </div>
-            <div v-if="path === '' && favorites.files.length > 0">
-                <p class="file-browser-label"> Quick access: </p>
-                <file-list :files="favorites.files"> </file-list>
-            </div>
+            <file-view v-if="subScreen === 'file-view'" :file="currentFile"> </file-view>
         </div>
-        <file-view v-if="subScreen === 'file-view'" :file="currentFile"> </file-view>
+        <p class="warning-text" v-else> File Manager can only be accessed when connected to a host! </p>
     </div>
 
 </template>
@@ -27,7 +30,7 @@ import { getBaseName, getBaseDir } from '../../../scripts/FileManager.js';
 
 export default {
     components: { FileList, FileView },
-    inject: ["directTalk"],
+    inject: ["directTalk", "hostStatus"],
     data() {
         return {
             subScreen: "file-browser",
@@ -208,5 +211,9 @@ p {
     min-width: 16px;
     font-size: 1.1em;
     margin-top: 5px;
+}
+.warning-text {
+    text-align: center;
+    color: rgb(7, 107, 107);
 }
 </style>
