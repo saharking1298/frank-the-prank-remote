@@ -19,6 +19,7 @@
                 </string-argument>
                 <text-argument v-else-if="argument.dataType === 'text'" :argument="argument"> </text-argument>
                 <choice-argument v-else-if="argument.dataType === 'choice'" :argument="argument"> </choice-argument>
+                 <dynamic-argument v-else-if="argument.dataType === 'dynamic'" :argument="argument"> </dynamic-argument>
             </div>
         </div>
         <p v-else class="info"> Looks like this feature doesn't take any arguments. <br>
@@ -34,8 +35,9 @@ import FloatArgument from './feature-arguments/FloatArgument.vue';
 import IntArgument from './feature-arguments/IntArgument.vue';
 import StringArgument from './feature-arguments/StringArgument.vue';
 import TextArgument from './feature-arguments/TextArgument.vue';
+import DynamicArgument from './feature-arguments/DynamicArgument.vue';
 export default {
-    components: { StringArgument, TextArgument, FloatArgument, ChoiceArgument, IntArgument },
+    components: { StringArgument, TextArgument, FloatArgument, ChoiceArgument, IntArgument, DynamicArgument },
     data() {
         return {
             argumentValues: [],

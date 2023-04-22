@@ -145,7 +145,13 @@ export const allFeatures = [
     {
         name: 'play',
         categoryId: 'multimedia',
-        description: 'Plays a track in Ftp media player'
+        description: 'Plays a track in Ftp media player',
+        arguments: [{
+            id: 'file',
+            title: 'a sound file',
+            dataType: 'dynamic',
+            fetch: 'media.sounds.all'
+        }]
     },
     {
         name: 'pause',
@@ -204,7 +210,24 @@ export const allFeatures = [
     {
         name: 'window',
         categoryId: 'control',
-        description: "Open, close, resize or manipulate an open window"
+        description: "Open, close, resize or manipulate an open window",
+        arguments: [
+            {
+                id: 'processID',
+                dataType: 'dynamic',
+                title: 'a target window',
+                fetch: 'windows.open.all'
+            },
+            {
+                id: 'action',
+                dataType: 'choice',
+                title: 'a window action',
+                choices: ['Focus', 'Close', 'Min', 'Max', 'Enable', 'Disable', 'Flash'],
+                manipulator: (choice) => {
+                    return choice.toLowerCase()
+                }
+            }
+        ]
     },
     {
         name: 'setvol',

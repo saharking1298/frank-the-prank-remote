@@ -1,13 +1,13 @@
 <template>
     <div id="choice-arg">
         <label class="arg-title"> Choose {{ argument.title }}: </label>
-        <select v-if="argument.choices.length > 10" v-model="currentChoice">
-            <option v-for="(choice, index) in argument.choices" :key="index" :value="choice"> {{ choice }} </option>
+        <select v-if="displayDropdown" v-model="currentChoice" class="dropdown">
+            <option v-for="(choice, index) in argument.choices" :key="index" :value="index"> {{ choice }} </option>
         </select>
         <div v-else class="radio-section">
             <div v-for="(choice, index) in argument.choices" :key="index">
                 <label class="radio-label">
-                    <input type="radio" class="radio-btn" :value="choice" v-model="currentChoice">
+                    <input type="radio" class="radio-btn" :value="index" v-model="currentChoice">
                     <span> {{ choice }} </span>
                 </label>
             </div>
@@ -21,17 +21,39 @@ export default {
         argument: {
             type: Object,
             required: true,
+        },
+        updated: {
+            type: Boolean,
+            required: false
         }
     },
     inject: ['updateArgValue'],
     data() {
-        const initalChoice = this.argument.choices[0];
         return {
-            currentChoice: initalChoice,
+            currentChoice: 0,
         };
+    },
+    computed: {
+        displayDropdown() {
+            if (this.argument.choices.length > 10) {
+                return true;
+            }
+            for(let choice of this.argument.choices) {
+                if (choice.length > 40) {
+                    return true;
+                } 
+            }
+            return false;
+        }
     },
     methods: {
         updateChoice(choice){
+            if (this.argument.translators){
+                choice = this.argument.translators[choice];
+            }
+            else {
+                choice = this.argument.choices[choice];
+            }
             if(this.argument.manipulator){
                 choice = this.argument.manipulator(choice);
             }
@@ -39,9 +61,14 @@ export default {
         },
     },
     watch: {
-        currentChoice(choice) {
-            this.updateChoice(choice);
+        currentChoice(value) {
+            this.updateChoice(value);
         },
+        updated() {
+            if (this.argument.choices.length > 0) {
+                this.updateChoice(0);
+            }
+        }
     },
     mounted() {
         this.updateChoice(this.currentChoice); 
@@ -69,5 +96,8 @@ input{
 }
 .arg-title{
     font-size: 1.05em;
+}
+.dropdown {
+    width: 95%;
 }
 </style>
