@@ -230,6 +230,19 @@ export const allFeatures = [
         ]
     },
     {
+        name: 'launch',
+        categoryId: 'control',
+        description: "Launch an installed application",
+        arguments: [
+            {
+                id: 'application',
+                dataType: 'dynamic',
+                title: 'an application to launch',
+                fetch: 'programs.installed.all'
+            }
+        ]
+    },
+    {
         name: 'setvol',
         categoryId: 'control',
         description: "Sets the host sound volume (0 - 100)",
@@ -244,7 +257,7 @@ export const allFeatures = [
     {
         name: 'volup',
         categoryId: 'control',
-        description: "Increase the volume of the host compuer",
+        description: "Increase the volume of the host computer",
         arguments: [{
             id: 'volume',
             dataType: 'int',
