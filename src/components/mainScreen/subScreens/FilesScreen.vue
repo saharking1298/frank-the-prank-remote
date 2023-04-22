@@ -1,6 +1,6 @@
 <template>
     <div id="wrapper" class="fade-in">
-        <div v-if="hostStatus.status != 'unconnected'">
+        <div v-if="hostStatus.status === 'online'">
             <div v-if="subScreen === 'file-browser'">
                 <div class="flexbox">
                     <input type="text" placeholder="Enter a path here..." v-model="inputPath" @keydown.enter="updatePath" class="textbox">
@@ -54,6 +54,13 @@ export default {
            setSubScreen: this.setSubScreen,
            refresh: this.refresh,
         }
+    },
+    watch: {
+        'hostStatus.status': function(value) {
+            if (value === 'online') {
+                this.refresh();
+            }
+        },
     },
     methods: {
         setSubScreen(screen) {
