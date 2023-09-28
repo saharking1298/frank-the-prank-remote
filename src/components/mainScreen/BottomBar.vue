@@ -8,7 +8,7 @@
 export default {
     data(){
         return{
-            screens: [{name: "Features", id: "features"}, {name: "Functions", id:"functions"}, {name: "File Browser", id:"files"}]
+            screens: [{name: "Features", id: "features"}, {name: "Flows", id:"flows"}, {name: "File Browser", id:"files"}]
         };
     },
     methods: {
@@ -25,11 +25,12 @@ export default {
     width: 100%;
     margin: 0;
     display: flex;
-    background-color: rgb(66, 100, 173);
+    background-color: rgb(13, 113, 113);
     position: fixed;
-    border-top: 2px solid black;
     left: 0;
     bottom: 0;
+    color: rgb(191, 225, 238);
+    border-top: 2px solid black;
 }
 .bottom-nav-item {
     border-right: 2px solid black;
@@ -43,6 +44,7 @@ export default {
     border-right: 0px;
 }
 .selected {
-    background-color: rgb(40, 70, 136);
+    background-color: rgb(10, 80, 80);
+    color: rgba(191, 225, 238, 0.8);
 }
 </style>

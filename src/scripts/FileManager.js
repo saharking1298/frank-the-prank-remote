@@ -58,17 +58,17 @@ const fileFormats = [
         ".ppt",
         ".pptx"
     ]},
-    {format: "document", plain: false, style: "far fa-file-word", formats:[
+    {format: "document", plain: false, style: "far fa-file-word", formats: [
         ".doc",
         ".docx",
         ".rtf"
     ]},
-    {format: "document", plain: false, style: "far fa-file-excel", formats:[
+    {format: "document", plain: false, style: "far fa-file-excel", formats: [
         ".xls",
         ".xlsx",
         ".xlsm"
     ]},
-    {format: "document", plain: true, style: "far fa-file-code", formats:[
+    {format: "document", plain: true, style: "far fa-file-code", formats: [
         ".c",
         ".cgi",
         ".pl",

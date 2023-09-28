@@ -1,5 +1,9 @@
 <template>
   <div id="wrapper">
+    <div v-if="featureDialogActive">
+        <div id="dialog-notification"> Please select a feature! </div>
+        <div class="spacer"></div>
+    </div>
     <search-feature @search-feature="searchFeature" :clear-input-detector="clearInputDetector" v-if="currentSubScreen !== 'featureSender'"> </search-feature>
     <category-view :feature-categories="featureCategories" v-if="currentSubScreen === 'featureCategories'" @category-click="onCategoryClick"> </category-view>
     <feature-view v-else-if="currentSubScreen === 'featureSearch'" :searchFilter="searchFilter" :filterText="filterText" :allCategories="featureCategories" @open-feature-sender="openFeatureSender"> </feature-view>
@@ -30,7 +34,7 @@ export default {
       required: true
     }
   },
-  inject: ["hideToast", "sendActionGlobal"],
+  inject: ["hideToast", "sendActionGlobal", "featureDialogActive"],
   provide() {
     return {
       setSubScreen: this.setSubScreen,
@@ -112,5 +116,17 @@ export default {
 #wrapper{
   margin-top: 60px;
   margin-bottom: 20px;
+}
+#dialog-notification {
+  position: fixed;
+  background: blue;
+  color: white;
+  margin-top: -10px;
+  margin-bottom: 100px;
+  width: 100%;
+  text-align: center;
+}
+.spacer {
+  padding-bottom: 20px;
 }
 </style>

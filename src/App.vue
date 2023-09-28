@@ -16,7 +16,8 @@ import socket from './socket';
 import SettingsScreen from './components/SettingsScreen.vue';
 import HostLoginScreen from './components/HostLoginScreen.vue';
 import {featureCategories, allFeatures} from './scripts/features';
-const { createHash } = require('crypto');
+import config from './config';
+const { createHash } = require('crypto-browserify');
 export default {
   components: { ToastMessage, MainScreen, LoginScreen, SettingsScreen, HostLoginScreen, ModalPopup },
     data(){
@@ -24,11 +25,11 @@ export default {
             io: {socket: null},
             hostStatus: {status: 'unconnected'},
             currentScreen: "remoteLoginScreen",  
-            // "mainScreen",
             currentHost: "",
             currentToast: {},
             toastActivator: false,
             toastHider: false,
+            featureDialogActive: false,
             modal: {visible: false},
             featureCategories, 
             allFeatures,
@@ -54,6 +55,7 @@ export default {
             logoutFromHost: this.logoutFromHost,
             showModal: this.showModal,
             hideModal: this.hideModal,
+            featureDialogActive: this.featureDialogActive,
         };
     },
     methods: {
@@ -133,7 +135,9 @@ export default {
         },
         async directTalk(name, content){
             const status = await this.listen("directTalk", {name, event: content});
-            console.log(status);
+            if (!config.production) {
+                console.log(status);
+            }
             return status;
         },
         async connectToHost(hostId, password){
@@ -152,6 +156,14 @@ export default {
                 await this.sleep(10);
             }
             return response;
+        },
+        showFileDialog(config) {
+            config;
+            // TODO: Implement file dialog
+        },
+        showFeatureDialog() {
+            this.featureDialogActive = true;
+            // TODO: Implement feature dialog
         }
     },
     created() {
